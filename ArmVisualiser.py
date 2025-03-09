@@ -12,55 +12,47 @@ class ArmVisualiser:
 
         points = np.array([[0,0,0]])
 
-        # Extract joint positions
+        Origin = np.array([[0],[0],[0]])
+
+        FrameArrowI = np.array([[100], [0], [0]])
+        FrameArrowJ = np.array([[0], [100], [0]])
+        FrameArrowK = np.array([[0], [0], [100]])
+
+        self.ax.quiver(*Origin, *FrameArrowI, color='g', label="X-axis") # x-axis is greeen
+        self.ax.quiver(*Origin, *FrameArrowJ, color='r', label="Y-axis") # y-axis is red
+        self.ax.quiver(*Origin, *FrameArrowK, color='b', label="Z-axis") # z-axis is blue
+
+        # self.ax.text(Origin[0,0], Origin[1,0], Origin[2,0], f"({Origin[0,0]}, {Origin[1,0]}, {Origin[2,0]})", color='black', fontsize=10, ha='center')
+        self.ax.text(Origin[0,0], Origin[1,0], Origin[2,0], f"Frame{0}", color='black', fontsize=10, ha='center')
+
+
+        # FrameArrowX = np.vstack((FrameArrowI, [1]))
+        # FrameArrowY = np.vstack((FrameArrowJ, [1]))
+        # FrameArrowZ = np.vstack((FrameArrowK, [1]))
+
         for i, T in enumerate(transformations):
-            pos = np.array(T[:3, 3]).flatten()  # Ensure it's a 1D array
 
-            print(f"Joint {i+1} Position: {pos}, Shape: {pos.shape}")  # Debugging
+            Origin = Origin + T[:3,3]
 
-            points = np.vstack((points, pos.reshape(1, 3)))  # Stack as (1,3) row
+            FrameArrowI = T[:3, :3]@FrameArrowI
+            FrameArrowJ = T[:3, :3]@FrameArrowJ
+            FrameArrowK = T[:3, :3]@FrameArrowK
 
-            self.draw_coordinate_frame(T, label=f'J{i+1}')
+            self.ax.quiver(*Origin, *FrameArrowI, color='g', label="X-axis") # x-axis is greeen
+            self.ax.quiver(*Origin, *FrameArrowJ, color='r', label="Y-axis") # y-axis is red
+            self.ax.quiver(*Origin, *FrameArrowK, color='b', label="Z-axis") # z-axis is blue
+
+            # self.ax.text(Origin[0,0], Origin[1,0], Origin[2,0], f"({Origin[0,0]}, {Origin[1,0]}, {Origin[2,0]})", color='black', fontsize=10, ha='center')
+            self.ax.text(Origin[0,0], Origin[1,0], Origin[2,0], f"Frame{i}", color='black', fontsize=10, ha='center')
 
 
-        print("Final Points Array:\n", points)
-        print("Shape of Final Points:", points.shape)  # Debugging
+        self.ax.set_xlim([-1000, 1000])
+        self.ax.set_ylim([-1000, 1000])
+        self.ax.set_zlim([-1000, 1000])
+        self.ax.set_xlabel('X')
+        self.ax.set_ylabel('Y')
+        self.ax.set_zlabel('Z')
 
-        # Ensure points is a 2D array with shape (n, 3)
-        if points.shape[1] != 3:
-            raise ValueError(f"Points array shape mismatch! Expected (n, 3), got {points.shape}")
-
-        # Extract x, y, z as separate 1D arrays
-        x, y, z = points[:, 0], points[:, 1], points[:, 2]
-
-        # Ensure x, y, z are 1D arrays
-        if x.ndim != 1 or y.ndim != 1 or z.ndim != 1:
-            raise ValueError("x, y, or z coordinates are not 1D arrays!")
-
-        # Plot joints and links
-        self.ax.plot(x, y, z, '-o', label="UR5e Arm", markersize=6)
+        # self.ax.legend()
         plt.show()
 
-        # for i, T in enumerate(transformations):
-        #     self.draw_coordinate_frame(T, label=f'J{i+1}')
-
-        # Set axis limits and labels
-        self.ax.set_xlim([-1, 1])
-        self.ax.set_ylim([-1, 1])
-        self.ax.set_zlim([0, 1.5])
-        self.ax.set_xlabel("X Axis")
-        self.ax.set_ylabel("Y Axis")
-        self.ax.set_zlabel("Z Axis")
-        self.ax.legend()
-        plt.show()
-
-    def draw_coordinate_frame(self, T, scale=0.1, label=""):
-        """Draw coordinate frames for each joint."""
-        origin = T[:3, 3]
-        x_axis = T[:3, 0] * scale
-        y_axis = T[:3, 1] * scale
-        z_axis = T[:3, 2] * scale
-
-        self.ax.quiver(*origin, *x_axis, color='r', linewidth=2, label=f'{label} X')
-        self.ax.quiver(*origin, *y_axis, color='g', linewidth=2, label=f'{label} Y')
-        self.ax.quiver(*origin, *z_axis, color='b', linewidth=2, label=f'{label} Z')
