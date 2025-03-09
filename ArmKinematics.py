@@ -17,6 +17,8 @@ class ArmKinematics:
         transforms = []
 
         for frame_num in range(6):
+
+            print(finalTransform)
             finalTransform = finalTransform@self.DHTable.constructHT(self.DHTable.DH_Table, frame_num)
 
             # I put this after because i assume we don't want the identity matrix as on of the 

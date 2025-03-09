@@ -14,4 +14,4 @@ mat, transforms, x,y,z = kinematics.endEffectorPose()
 print(x,y,z)
 
 visualiser = ArmVisualiser()
-visualiser.plot_UR5e(transforms)
+visualiser.plot_UR5e(transforms, 100)

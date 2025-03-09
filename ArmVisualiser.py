@@ -8,15 +8,20 @@ class ArmVisualiser:
         self.ax = self.fig.add_subplot(111, projection='3d')
 
 
-    def plot_UR5e(self, transformations):
+    def plot_UR5e(self, transformations, scale=0.05):
 
         points = np.array([[0,0,0]])
 
         # Extract joint positions
         for i, T in enumerate(transformations):
             pos = np.array(T[:3, 3]).flatten()  # Ensure it's a 1D array
+
             print(f"Joint {i+1} Position: {pos}, Shape: {pos.shape}")  # Debugging
+
             points = np.vstack((points, pos.reshape(1, 3)))  # Stack as (1,3) row
+
+            self.draw_coordinate_frame(T, label=f'J{i+1}')
+
 
         print("Final Points Array:\n", points)
         print("Shape of Final Points:", points.shape)  # Debugging
@@ -36,8 +41,8 @@ class ArmVisualiser:
         self.ax.plot(x, y, z, '-o', label="UR5e Arm", markersize=6)
         plt.show()
 
-        for i, T in enumerate(transformations):
-            self.draw_coordinate_frame(T, label=f'J{i+1}')
+        # for i, T in enumerate(transformations):
+        #     self.draw_coordinate_frame(T, label=f'J{i+1}')
 
         # Set axis limits and labels
         self.ax.set_xlim([-1, 1])
