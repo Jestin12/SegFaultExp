@@ -26,11 +26,39 @@ class DHTable:
             self.DH_Table[row][self.A] = a_i[row]
             self.DH_Table[row][self.ALPHA] = alpha_i[row]
 
-    # Construct homogeneous transform matrix
-    def constructHT(self, DH_Table, frame_num):
-        HT = np.matrix([[math.cos(DH_Table[frame_num][self.THETA]), -(math.sin(DH_Table[frame_num][self.THETA])*math.cos(DH_Table[frame_num][self.ALPHA])), (math.sin(DH_Table[frame_num][self.THETA])*math.sin(DH_Table[frame_num][self.ALPHA])), DH_Table[frame_num][self.A]*math.cos(DH_Table[frame_num][self.THETA])], 
-                        [math.sin(DH_Table[frame_num][self.THETA]), (math.cos(DH_Table[frame_num][self.THETA])*math.cos(DH_Table[frame_num][self.ALPHA])), -(math.cos(DH_Table[frame_num][self.THETA])*math.sin(DH_Table[frame_num][self.ALPHA])), DH_Table[frame_num][self.A]*math.sin(DH_Table[frame_num][self.THETA])],
-                        [0, math.sin(DH_Table[frame_num][self.ALPHA]), math.cos(DH_Table[frame_num][self.ALPHA]), DH_Table[frame_num][self.D]],
-                        [0,0,0,1]])
+    def _get_DH_parameters(self, frame_num):
+        # Extract parameters
+        theta = self.DH_Table[frame_num][self.THETA]
+        d = self.DH_Table[frame_num][self.D]
+        a = self.DH_Table[frame_num][self.A]
+        alpha = self.DH_Table[frame_num][self.ALPHA]
 
-        return HT
+        # Compute trigonometric values
+        c_t = math.cos(theta)
+        s_t = math.sin(theta)
+        c_a = math.cos(alpha)
+        s_a = math.sin(alpha)
+
+        return c_t, s_t, c_a, s_a, d, a
+
+    # Construct homogeneous transform matrix (either standard or modified)
+    def constructHT(self, frame_num, standard=True):
+        c_t, s_t, c_a, s_a, d_i, a_i = self._get_DH_parameters(frame_num)
+
+        if standard:
+            SHT = np.array([
+                [c_t, -s_t * c_a, s_t * s_a, a_i * c_t],
+                [s_t, c_t * c_a, -c_t * s_a, a_i * s_t],
+                [0, s_a, c_a, d_i],
+                [0, 0, 0, 1]
+            ])
+            return SHT
+        else:
+            MHT = np.array([
+            [c_t, -s_t, 0, a_i],
+            [s_t * c_a, c_t * c_a, -s_a, -s_a * d_i],
+            [s_t * s_a, c_t * s_a, c_a, c_a * d_i],
+            [0, 0, 0, 1]
+            ])
+            return MHT
+
