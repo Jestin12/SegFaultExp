@@ -26,6 +26,7 @@ class DHTable:
             self.DH_Table[row][self.A] = a_i[row]
             self.DH_Table[row][self.ALPHA] = alpha_i[row]
 
+    #Helper function to get DH parameters
     def _get_DH_parameters(self, frame_num):
         # Extract parameters
         theta = self.DH_Table[frame_num][self.THETA]
