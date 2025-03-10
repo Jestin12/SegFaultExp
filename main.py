@@ -1,9 +1,12 @@
 from DHTable import DHTable
 from ArmKinematics import ArmKinematics
 from ArmVisualiser import ArmVisualiser
+from claude import Arrow3D
 import math
+from claude import visualize_transforms
+import matplotlib.pyplot as plt
 
-joint_angles = [3*math.pi, 2*math.pi, 2*(math.pi), -(math.pi), 0, 0]
+joint_angles = [0,0,0,0,0,0]
 
 table1 = DHTable(joint_angles)
 
@@ -15,5 +18,5 @@ print("End Effector Position: \n",kinematics.endeffectorPosition().round(2), "\n
 
 kinematics.checkCorrectness()
 
-visualiser = ArmVisualiser()
-visualiser.plot_UR5e(transforms, 1)
+fig, ax = visualize_transforms(transforms, scale=1.0)
+plt.show()
