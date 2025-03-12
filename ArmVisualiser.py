@@ -66,7 +66,7 @@ class ArmVisualiser:
             self.ax.quiver(*Origin, *FrameArrowJ, color='r', label="Y-axis") # y-axis is red
             self.ax.quiver(*Origin, *FrameArrowK, color='b', label="Z-axis") # z-axis is blue
 
-            self.ax.text(Origin[0,0], Origin[1,0], Origin[2,0], f"Frame{i+1} ", color='black', fontsize=10, ha='center')
+            # self.ax.text(*Origin, f"Frame{i+1} ", color='black', fontsize=10, ha='center')
             # self.ax.text(Origin[0,0], Origin[1,0], Origin[2,0], f"({Origin[0,0]}, {Origin[1,0]}, {Origin[2,0]})", color='black', fontsize=10, ha='center')
 
         #   Sets the limits of the 3D graph and axis labels
