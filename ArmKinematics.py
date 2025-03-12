@@ -43,7 +43,7 @@ class ArmKinematics:
     # Determine the final end effector position 
     def getAllJointGlobPose(self):
         self.jointPoseGlob = np.array([np.eye(self.TRANSFORM_DIM) for _ in range(self.JOINTS)])
-
+     
         for frame_num in range(self.JOINTS):
             self.jointPoseGlob[frame_num] = self.jointPoseGlob[frame_num-1]@self.DHTable.constructHT(frame_num)
 

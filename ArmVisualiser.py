@@ -41,8 +41,8 @@ class ArmVisualiser:
         FrameArrowK = np.array([[0], [0], [100]])
 
         #   Plots the vectors FrameArrow I, J and K as coloured arrows on the 3D graph
-        self.ax.quiver(*Origin, *FrameArrowI, color='g', label="X-axis") # x-axis is greeen
-        self.ax.quiver(*Origin, *FrameArrowJ, color='r', label="Y-axis") # y-axis is red
+        self.ax.quiver(*Origin, *FrameArrowI, color='r', label="X-axis") # x-axis is greeen
+        self.ax.quiver(*Origin, *FrameArrowJ, color='g', label="Y-axis") # y-axis is red
         self.ax.quiver(*Origin, *FrameArrowK, color='b', label="Z-axis") # z-axis is blue
 
         #   Annotates the frames with their frame number and global coordinate
@@ -62,12 +62,17 @@ class ArmVisualiser:
             FrameArrowK = T[:3, :3]@FrameArrowK
 
         #   Plots the vectors FrameArrow I, J and K as coloured arrows on the 3D graph
-            self.ax.quiver(*Origin, *FrameArrowI, color='g', label="X-axis") # x-axis is greeen
-            self.ax.quiver(*Origin, *FrameArrowJ, color='r', label="Y-axis") # y-axis is red
+            self.ax.quiver(*Origin, *FrameArrowI, color='r', label="X-axis") # x-axis is greeen
+            self.ax.quiver(*Origin, *FrameArrowJ, color='g', label="Y-axis") # y-axis is red
             self.ax.quiver(*Origin, *FrameArrowK, color='b', label="Z-axis") # z-axis is blue
 
             # self.ax.text(*Origin, f"Frame{i+1} ", color='black', fontsize=10, ha='center')
             # self.ax.text(Origin[0,0], Origin[1,0], Origin[2,0], f"({Origin[0,0]}, {Origin[1,0]}, {Origin[2,0]})", color='black', fontsize=10, ha='center')
+            FrameArrowI = np.array([[100], [0], [0]])
+            FrameArrowJ = np.array([[0], [100], [0]])
+            FrameArrowK = np.array([[0], [0], [100]])
+
+
 
         #   Sets the limits of the 3D graph and axis labels
         self.ax.set_xlim([-1500, 1500])
