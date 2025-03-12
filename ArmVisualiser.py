@@ -12,7 +12,7 @@ class ArmVisualiser:
 
         points = np.array([[0,0,0]])
 
-        Origin = np.array([[0],[0],[0], [1]])
+        Origin = np.array([[0],[0],[0]])
 
         FrameArrowI = np.array([[100], [0], [0]])
         FrameArrowJ = np.array([[0], [100], [0]])
@@ -28,18 +28,20 @@ class ArmVisualiser:
 
         for i, T in enumerate(transformations):
 
-            Origin = T@Origin
+            # Origin = T@Origin
+            Origin = T[:3, 3]
+            print(Origin)
 
             FrameArrowI = T[:3, :3]@FrameArrowI
             FrameArrowJ = T[:3, :3]@FrameArrowJ
             FrameArrowK = T[:3, :3]@FrameArrowK
 
-            self.ax.quiver(Origin[0,0], Origin[1,0], Origin[2,0], *FrameArrowI, color='g', label="X-axis") # x-axis is greeen
+            self.ax.quiver(*Origin, *FrameArrowI, color='g', label="X-axis") # x-axis is greeen
             self.ax.quiver(Origin[0,0], Origin[1,0], Origin[2,0], *FrameArrowJ, color='r', label="Y-axis") # y-axis is red
             self.ax.quiver(Origin[0,0], Origin[1,0], Origin[2,0], *FrameArrowK, color='b', label="Z-axis") # z-axis is blue
 
             # self.ax.text(Origin[0,0], Origin[1,0], Origin[2,0], f"({Origin[0,0]}, {Origin[1,0]}, {Origin[2,0]})", color='black', fontsize=10, ha='center')
-            self.ax.text(Origin[0,0], Origin[1,0], Origin[2,0], f"Frame{i}", color='black', fontsize=10, ha='center')
+            self.ax.text(Origin[0,0], Origin[1,0], Origin[2,0], f"Frame{i+1} ", color='black', fontsize=10, ha='center')
 
 
         self.ax.set_xlim([-1000, 1000])

@@ -3,7 +3,7 @@ from ArmKinematics import ArmKinematics
 from ArmVisualiser import ArmVisualiser
 import math
 
-joint_angles = [0,0,0,0, 0, 0]
+joint_angles = [0, 0, 0, 0, 0, 0]
 
 table1 = DHTable(joint_angles)
 
