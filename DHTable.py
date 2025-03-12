@@ -16,9 +16,9 @@ class DHTable:
         self.joint_angles = joint_angles
         self.DH_Table = np.zeros((6, 4))
 
-        d_i = [163, 138, 131, 127, 100, 100]
-        a_i = [0, 425, 392, 0, 0, 0]
-        alpha_i = [(math.pi)/2, -(math.pi), math.pi, -(math.pi), math.pi, 0]
+        d_i = [163, 0, 0, 127, 100, 100]
+        a_i = [0, -425, -392, 0, 0, 0]
+        alpha_i = [(math.pi)/2, 0, 0, (math.pi)/2, -(math.pi/2), 0]
 
         for row in range(self.TABLE_ROWS):
             self.DH_Table[row][self.D] = d_i[row]
@@ -56,10 +56,10 @@ class DHTable:
             return SHT
         else:
             MHT = np.array([
-            [c_t, -s_t, 0, a_i],
-            [s_t * c_a, c_t * c_a, -s_a, -s_a * d_i],
-            [s_t * s_a, c_t * s_a, c_a, c_a * d_i],
-            [0, 0, 0, 1]
+                [c_t, -s_t, 0, a_i],
+                [s_t * c_a, c_t * c_a, -s_a, -s_a * d_i],
+                [s_t * s_a, c_t * s_a, c_a, c_a * d_i],
+                [0, 0, 0, 1]
             ])
             return MHT
 
