@@ -58,9 +58,9 @@ class ArmVisualiser:
             OriginPrev = np.copy(Origin)
 
         # Set limits and labels for the 3D graph
-        self.ax.set_xlim([-1500, 1500])
-        self.ax.set_ylim([-1500, 1500])
-        self.ax.set_zlim([-1500, 1500])
+        self.ax.set_xlim([0, 1000])
+        self.ax.set_ylim([0, 1000])
+        self.ax.set_zlim([0, 1000])
         self.ax.set_xlabel('X')
         self.ax.set_ylabel('Y')
         self.ax.set_zlabel('Z')
