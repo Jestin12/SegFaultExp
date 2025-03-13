@@ -34,11 +34,16 @@ class ArmVisualiser:
         #   global frame
         Origin = np.array([[0],[0],[0]])
 
+        #   OriginPrev holds the position vector of the previous frame so the link
+        #   between the to joints can be plotted
+        OriginPrev = np.array([[0],[0],[0]])
+
+
         #   FrameArrow I, J and K represent the elementary vectors that are used to 
         #   visualise the axis x, y and z of the frames 
-        FrameArrowI = np.array([[100], [0], [0]])
-        FrameArrowJ = np.array([[0], [100], [0]])
-        FrameArrowK = np.array([[0], [0], [100]])
+        FrameArrowI = np.array([[50], [0], [0]])
+        FrameArrowJ = np.array([[0], [50], [0]])
+        FrameArrowK = np.array([[0], [0], [50]])
 
         #   Plots the vectors FrameArrow I, J and K as coloured arrows on the 3D graph
         self.ax.quiver(*Origin, *FrameArrowI, color='r', label="X-axis") # x-axis is greeen
@@ -66,11 +71,15 @@ class ArmVisualiser:
             self.ax.quiver(*Origin, *FrameArrowJ, color='g', label="Y-axis") # y-axis is red
             self.ax.quiver(*Origin, *FrameArrowK, color='b', label="Z-axis") # z-axis is blue
 
+            self.ax.plot([OriginPrev[0], Origin[0]], [OriginPrev[1], Origin[1]], [OriginPrev[2], Origin[2]], marker='o', linestyle='-', color='purple', linewidth=2)
+
             # self.ax.text(*Origin, f"Frame{i+1} ", color='black', fontsize=10, ha='center')
             # self.ax.text(Origin[0,0], Origin[1,0], Origin[2,0], f"({Origin[0,0]}, {Origin[1,0]}, {Origin[2,0]})", color='black', fontsize=10, ha='center')
             FrameArrowI = np.array([[100], [0], [0]])
             FrameArrowJ = np.array([[0], [100], [0]])
             FrameArrowK = np.array([[0], [0], [100]])
+
+            OriginPrev = Origin
 
 
 
