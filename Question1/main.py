@@ -40,12 +40,12 @@ while(1):
     wrist2 = int(input("wrist2 angle: "))
     wrist3 = int(input("wrist3 angle: "))
 
-    JointAngles = [base * (math.pi / 180), 
-                   shoulder * (math.pi / 180), 
-                   elbow * (math.pi / 180), 
-                   wrist1 * (math.pi / 180), 
-                   wrist2 * (math.pi / 180), 
-                   wrist3 * (math.pi / 180)]
+    JointAngles = [np.radians(base), 
+                   np.radians(shoulder), 
+                   np.radians(elbow), 
+                   np.radians(wrist1), 
+                   np.radians(wrist2), 
+                   np.radians(wrist3)]
 
     DhTable = DHTable(JointAngles)
     Kinematics = ArmKinematics(DhTable)
@@ -66,9 +66,9 @@ while(1):
     Rx = np.arctan2(RotationMatrix[2, 1], RotationMatrix[2, 2])  
 
 
-    print("Roll: ", Rx)
-    print("Pitch: ", Ry)
-    print("Yaw: ", Rz)
+    print("Roll: ", round(Rx, 3))
+    print("Pitch: ", round(Ry, 3))
+    print("Yaw: ", round(Rz, 3))
 
 
     Visualiser = ArmVisualiser()
