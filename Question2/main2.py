@@ -3,7 +3,10 @@ from ArmKinematics2 import ArmKinematics
 from ArmVisualiser2 import ArmVisualiser
 import math
 
-joint_angles = [0,0,0,0]
+THETA_1 = math.radians(30)
+THETA_2 = math.radians(60) - math.radians(90)
+
+joint_angles = [0,THETA_1,THETA_2,0]
 
 table1 = DHTable(joint_angles, 100, 100)
 
