@@ -50,6 +50,7 @@ while(1):
     DhTable = DHTable(JointAngles)
     Kinematics = ArmKinematics(DhTable)
     Transforms = Kinematics.getAllJointGlobPose()
+    Kinematics.checkCorrectness()
 
     # print("Joint Positions: \n", Transforms.round(2), "\n")
     print("End Effector Position: \n",Kinematics.endeffectorPosition().round(2), "\n")
