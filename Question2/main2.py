@@ -8,7 +8,7 @@ THETA_2 = math.radians(60) - math.radians(90)
 
 joint_angles = [0,THETA_1,THETA_2,0]
 
-table1 = DHTable(joint_angles, 100, 100)
+table1 = DHTable(joint_angles, 500, 50)
 
 
 print(table1.constructHT(0))
@@ -28,6 +28,10 @@ print("End Effector Position: \n",kinematics.endeffectorPosition().round(2), "\n
 kinematics.checkCorrectness()
 
 visualiser = ArmVisualiser()
+
+visualiser.PlotObstacle([400, 0], 300)
 visualiser.PlotUR5e(transforms)
+
+visualiser.Show()
 
 

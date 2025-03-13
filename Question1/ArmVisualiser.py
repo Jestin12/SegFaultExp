@@ -82,12 +82,17 @@ class ArmVisualiser:
 
 
         # Set limits and labels for the 3D graph
-        self.ax.set_xlim([0, 1000])
-        self.ax.set_ylim([0, 1000])
+        self.ax.set_xlim([-1000, 1000])
+        self.ax.set_ylim([-1000, 1000])
         self.ax.set_zlim([0, 1000])
         self.ax.set_xlabel('X')
         self.ax.set_ylabel('Y')
         self.ax.set_zlabel('Z')
 
+        print("Close the plot window to continue onto the next plot")
+
         #   Generates the 3D graph window
         plt.show()
+
+
+

@@ -65,5 +65,25 @@ class ArmVisualiser:
         self.ax.set_ylabel('Y')
         self.ax.set_zlabel('Z')
 
-        # Display the plot window
+
+    #   Plots the circular obstacle on the X-Z plane
+    def PlotObstacle(self, Position, Radius):
+        
+        theta = np.linspace(0, 2*np.pi, 100)    #   Angle values
+
+        #   Creating circle coordinates in the XY plane
+        x = Position[0] + Radius * np.cos(theta)
+        y = np.zeros_like(x)
+        z = Position[1] + Radius * np.sin(theta)
+
+        #   Plots the circle
+        self.ax.plot(x, y, z, linestyle='-', color='yellow', linewidth=2)
+
+        print("circle should've plotted")
+
+
+    #   Shows the plots on the figure
+    def Show(self):
         plt.show()
+
+
