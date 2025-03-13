@@ -1,5 +1,19 @@
 import numpy as np
 
+# *************************** ArmKinematics.py ***************************************
+
+# Filename:       ArmVisualiser.py
+# Author:         Alfie
+
+# Description:  This file defines the ArmKinematics class which finds the 
+#               end effector position of the robot arm as well as the homogeneous 
+#               transforms from the origin to each joint. It also checks for singularities
+#               using the Jacobian matrix.    
+
+# Dependencies: numpy
+
+# ************************************************************************************
+
 class ArmKinematics:
 
     JOINTS = 6

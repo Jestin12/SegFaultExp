@@ -1,36 +1,9 @@
 from DHTable import DHTable
 from ArmKinematics import ArmKinematics
 from ArmVisualiser import ArmVisualiser
-import math
 import numpy as np
 
-# joint_angles = [0,-(math.pi/2),0,-(math.pi/2),0,0]
-
-# table1 = DHTable(joint_angles)
-
-
-# print(table1.constructHT(0))
-# print(table1.constructHT(1))
-# print(table1.constructHT(2))
-# print(table1.constructHT(3))
-# print(table1.constructHT(4))
-# print(table1.constructHT(5))
-
-
-# Kinematics = ArmKinematics(table1)
-
-# Transforms =  Kinematics.getAllJointGlobPose()
-
-# #print("Joint Positions: \n", transforms.round(2), "\n")
-
-# print("End Effector Position: \n",Kinematics.endeffectorPosition().round(2), "\n")
-
-# Kinematics.checkCorrectness()
-
-# Visualiser = ArmVisualiser()
-# Visualiser.PlotUR5e(Transforms)
-
-
+# Triggering Standard Input for joint angles 
 while(1):
     print("Enter the angles for the robot arm in degrees\n")
     base = int(input("base angle: "))
@@ -52,7 +25,7 @@ while(1):
     Transforms = Kinematics.getAllJointGlobPose()
     Kinematics.checkCorrectness()
 
-    # print("Joint Positions: \n", Transforms.round(2), "\n")
+    # Print("Joint Positions: \n", Transforms.round(2), "\n")
     print("End Effector Position: \n",Kinematics.endeffectorPosition().round(2), "\n")
 
     RotationMatrix = Transforms[-1][:3, :3]
@@ -67,10 +40,11 @@ while(1):
     Rx = np.arctan2(RotationMatrix[2, 1], RotationMatrix[2, 2])  
 
 
+    #Print the Euler angles
     print("Roll: ", round(Rx, 3))
     print("Pitch: ", round(Ry, 3))
     print("Yaw: ", round(Rz, 3))
 
-
+    #Instantiate the visualiser and plot the frames
     Visualiser = ArmVisualiser()
     Visualiser.PlotUR5e(Transforms)

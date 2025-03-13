@@ -16,6 +16,7 @@ class DHTable:
         self.joint_angles = joint_angles
         self.DH_Table = np.zeros((6, 4))
 
+        #DH parameters
         d_i = [163, 0, 0, 127, 100, 100]
         a_i = [0, -425, -392, 0, 0, 0]
         alpha_i = [(math.pi)/2, 0, 0, (math.pi)/2, -(math.pi/2), 0]
