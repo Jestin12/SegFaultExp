@@ -66,7 +66,7 @@ class ArmVisualiser:
             FrameArrowJ = T[:3, :3]@FrameArrowJ
             FrameArrowK = T[:3, :3]@FrameArrowK
 
-        #   Plots the vectors FrameArrow I, J and K as coloured arrows on the 3D graph
+            #   Plots the vectors FrameArrow I, J and K as coloured arrows on the 3D graph
             self.ax.quiver(*Origin, *FrameArrowI, color='r', label="X-axis") # x-axis is greeen
             self.ax.quiver(*Origin, *FrameArrowJ, color='g', label="Y-axis") # y-axis is red
             self.ax.quiver(*Origin, *FrameArrowK, color='b', label="Z-axis") # z-axis is blue

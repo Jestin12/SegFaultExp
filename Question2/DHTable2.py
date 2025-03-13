@@ -4,7 +4,7 @@ import math
 class DHTable:
 
     # Constant definitions
-    TABLE_ROWS = 3
+    TABLE_ROWS = 4
     TABLE_COLUMNS = 4
     D = 0
     THETA = 1
