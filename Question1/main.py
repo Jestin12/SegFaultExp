@@ -1,35 +1,66 @@
-from DHTable import DHTable
-from ArmKinematics import ArmKinematics
-from ArmVisualiser import ArmVisualiser
+from cDHTable import cDHTable
+from cArmKinematics import cArmKinematics
+from cArmVisualiser import cArmVisualiser
 import numpy as np
 
-# Triggering Standard Input for joint angles 
+
+# *************************** main.py ***************************************
+
+# Filename:       main.py
+# Author:         Alfie
+
+# Description:  This file contains the main code of the robotic arm simulator,
+#               it produces a DH Table to calculate the frame transformation matrices
+#               by instantiating the cDHTable class. The code checks for singularities
+#               and returns an end effector position by instantiating the cArmKinematics 
+#               class.
+#               The code plots the frames of the robot limb on a 3D plot through the 
+#               cArmVisualiser class.
+#               The code uses Standard input to recursively calculate transformation matrices
+#               and plot the frames of the robot limb.
+#
+# Dependencies: numpy   cDHTable.py     cArmKinematics.py     cArmVisualiser.py
+
+# ************************************************************************************
+
+
+
+#   Triggering Standard Input for joint angles
+
+#   Visualises a plot described by the Standard input, then 
+#   generates a new plot when the old plot's window is closed
+#   using new Standard input values
+
 while(1):
     print("Enter the angles for the robot arm in degrees\n")
-    base = int(input("base angle: "))
-    shoulder = int(input("Shoulder angle: "))
-    elbow = int(input("elbow angle: "))
-    wrist1 = int(input("wrist1 angle: "))
-    wrist2 = int(input("wrist2 angle: "))
-    wrist3 = int(input("wrist3 angle: "))
+    Base = int(input("Base angle: "))
+    Shoulder = int(input("Shoulder angle: "))
+    Elbow = int(input("Elbow angle: "))
+    Wrist1 = int(input("Wrist1 angle: "))
+    Wrist2 = int(input("Wrist2 angle: "))
+    Wrist3 = int(input("Wrist3 angle: "))
 
-    JointAngles = [np.radians(base), 
-                   np.radians(shoulder), 
-                   np.radians(elbow), 
-                   np.radians(wrist1), 
-                   np.radians(wrist2), 
-                   np.radians(wrist3)]
+    JointAngles = [np.radians(Base), 
+                   np.radians(Shoulder), 
+                   np.radians(Elbow), 
+                   np.radians(Wrist1), 
+                   np.radians(Wrist2), 
+                   np.radians(Wrist3)]
 
-    DhTable = DHTable(JointAngles)
-    Kinematics = ArmKinematics(DhTable)
-    Transforms = Kinematics.getAllJointGlobPose()
-    Kinematics.checkCorrectness()
+    DHTable = cDHTable(JointAngles)
+    Kinematics = cArmKinematics(DHTable)
+    Transforms = Kinematics.mGetAllJointGlobPose()
+    Kinematics.mCheckCorrectness()
 
     # Print("Joint Positions: \n", Transforms.round(2), "\n")
-    print("End Effector Position: \n",Kinematics.endeffectorPosition().round(2), "\n")
+    print("End Effector Position: \n",Kinematics.mEndEffectorPosition().round(2), "\n")
 
+    #   Extracts the rotation matrix of the last transform matrix in Transforms, returning
+    #   the transform matrix from frame 0 to the end effector frame
     RotationMatrix = Transforms[-1][:3, :3]
 
+
+    #   Calculating the roll, pitch and yaw of the end effector relative to the global frame
     # Yaw (Rotation about Z-axis)
     Rz = np.arctan2(RotationMatrix[1, 0], RotationMatrix[0, 0])  
 
@@ -41,10 +72,10 @@ while(1):
 
 
     #Print the Euler angles
-    print("Roll: ", round(Rx, 3))
-    print("Pitch: ", round(Ry, 3))
-    print("Yaw: ", round(Rz, 3))
+    print("Roll (Rx): ", round(Rx, 3))
+    print("Pitch (Ry): ", round(Ry, 3))
+    print("Yaw (Rz): ", round(Rz, 3))
 
     #Instantiate the visualiser and plot the frames
-    Visualiser = ArmVisualiser()
-    Visualiser.PlotUR5e(Transforms)
+    Visualiser = cArmVisualiser()
+    Visualiser.mPlotUR5e(Transforms)
