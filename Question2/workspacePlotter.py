@@ -5,7 +5,7 @@ from DHTable2 import DHTable
 
 class WorkspacePlotter():
 
-    NUM_POINTS = 20
+    NUM_POINTS = 30
 
     def __init__(self, s1_llim, s1_ulim, s4_llim, s4_ulim, theta_2_llim, theta_2_ulim, theta_3_llim, theta_3_ulim):
         self.s1_llim = s1_llim
