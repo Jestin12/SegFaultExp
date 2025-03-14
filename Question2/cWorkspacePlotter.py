@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import numpy as np  
-from Question2.cArmKinematics2 import cArmKinematics
-from Question2.cDHTable2 import cDHTable
+from cArmKinematics2 import cArmKinematics
+from cDHTable2 import cDHTable
 
 # *************************** cWorkspacePlotter.py ***************************************
 

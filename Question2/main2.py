@@ -1,6 +1,6 @@
-from Question2.cDHTable2 import cDHTable
-from Question2.cArmKinematics2 import cArmKinematics
-from Question2.cArmVisualiser2 import cArmVisualiser
+from cDHTable2 import cDHTable
+from cArmKinematics2 import cArmKinematics
+from cArmVisualiser2 import cArmVisualiser
 import math
 from cWorkspacePlotter import cWorkspacePlotter
 import numpy as np
@@ -52,10 +52,16 @@ Transforms =  Kinematics.mGetAllJointGlobPose()
 
 Kinematics.mCheckCorrectness()
 
+print("Takes about 20 seconds to render the workspace plot")
+print("Close the workspace plot to view the frames plot")
+
+
 Plotter = cWorkspacePlotter(50, 100, 10, 30, -4*np.pi/5, np.pi/2, -4*np.pi/3, 4*np.pi/3)
 Plotter.mPlotWorkspace()
 
-# visualiser = cArmVisualiser()
-# visualiser.mPlotUR5e(transforms)
+visualiser = cArmVisualiser()
+visualiser.mPlotUR5e(Transforms)
+
+visualiser.Show()
 
 
