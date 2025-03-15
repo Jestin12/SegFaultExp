@@ -8,7 +8,7 @@ import numpy as np
 THETA_1 = math.radians(89.18)
 THETA_2 = math.radians(-94.53) - math.radians(90)
 
-joint_angles = [0,-1.137,1.227 - np.pi/2,0]
+joint_angles = [0,-0.0386,-1.227 - np.pi/2,0]
 
 table1 = DHTable(joint_angles, 500, 50)
 
@@ -28,6 +28,7 @@ kinematics.checkCorrectness()
 
 visualiser = ArmVisualiser()
 visualiser.PlotUR5e(transforms)
+visualiser.PlotObstacle([400,0], 300)
 
 visualiser.Show()
 
