@@ -2,14 +2,14 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-# *************************** ArmVisualiser.py ***************************************
+# *************************** cArmVisualiser.py ***************************************
 
-# Filename:       ArmVisualiser.py
+# Filename:       cArmVisualiser.py
 # Author:         Jestin
 
-# Description:  This file defines the ArmVisualiser class which plots the reference
+# Description:  This file defines the cArmVisualiser class which plots the reference
 #               frames of the robot arm on a matplotlib figure.
-#               Using the PlotUR5e method it receives a list of 4x4 transform matrices
+#               Using the mPlotUR5e method it receives a list of 4x4 transform matrices
 #               and extracts the rotation matrix and global position vectors to visulise the
 #               frames on a 3D graph
 
@@ -18,16 +18,16 @@ from mpl_toolkits.mplot3d import Axes3D
 # ************************************************************************************
 
 
-class ArmVisualiser:
+class cArmVisualiser:
 
-    # Instantiates the ArmVisualiser class and initializes a matplotlib 3D figure
+    # Instantiates the cArmVisualiser class and initializes a matplotlib 3D figure
     def __init__(self):
         self.fig = plt.figure()
         self.ax = self.fig.add_subplot(111, projection='3d')
 
     # Plots the frames
-    # transformations -> list of 4x4 transformation matrices
-    def PlotUR5e(self, transformations):
+    # Transformations -> list of 4x4 transformation matrices
+    def mPlotUR5e(self, Transformations):
 
         #   Origin holds the position vector (1D array) of the frame with respect of to the 
         #   global frame
@@ -51,8 +51,8 @@ class ArmVisualiser:
         #   Annotates the frames with their frame number and global coordinate
         self.ax.text(Origin[0], Origin[1], Origin[2], f"Frame 0", color='black', fontsize=10, ha='center')
 
-        # Loop through transformations to plot subsequent frames
-        for i, T in enumerate(transformations):
+        # Loop through Transformations to plot subsequent frames
+        for i, T in enumerate(Transformations):
 
             #   Assigns Origin to be the coordinate (position vector) of the frame
             #   found in the transformation matrix (0-i)

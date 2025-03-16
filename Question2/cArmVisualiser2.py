@@ -2,16 +2,33 @@ import numpy as np
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 
-class ArmVisualiser:
 
-    # Instantiates the ArmVisualiser class and initializes a matplotlib 3D figure
+# *************************** cArmVisualiser.py ***************************************
+
+# Filename:       cArmVisualiser.py
+# Author:         Jestin
+
+# Description:  This file defines the cArmVisualiser class which plots the reference
+#               frames of the robot arm on a matplotlib figure.
+#               Using the mPlotUR5e method it receives a list of 4x4 transform matrices
+#               and extracts the rotation matrix and global position vectors to visulise the
+#               frames on a 3D graph
+
+# Dependencies: numpy   matplotlib.pyplot   mpl_toolkits.mplot3d 
+
+# ************************************************************************************
+
+
+class cArmVisualiser:
+
+    # Instantiates the cArmVisualiser class and initializes a matplotlib 3D figure
     def __init__(self):
         self.fig = plt.figure()
         self.ax = self.fig.add_subplot(111, projection='3d')
 
     # Plots the frames
-    # transformations -> list of 4x4 transformation matrices
-    def PlotUR5e(self, transformations):
+    # Transformations -> list of 4x4 transformation matrices
+    def mPlotUR5e(self, Transformations):
 
         # Initialize origin and frame vectors (as 1D arrays)
         Origin = np.array([0, 0, 0])
@@ -30,8 +47,8 @@ class ArmVisualiser:
         # Annotate the initial frame (frame 0) at origin
         self.ax.text(Origin[0], Origin[1], Origin[2], f"Frame 0", color='black', fontsize=10, ha='center')
 
-        # Loop through transformations to plot subsequent frames
-        for i, T in enumerate(transformations):
+        # Loop through Transformations to plot subsequent frames
+        for i, T in enumerate(Transformations):
             # Extract position (Origin) from transformation matrix
             Origin = T[:3, 3]
 
@@ -69,12 +86,12 @@ class ArmVisualiser:
     #   Plots the circular obstacle on the X-Z plane
     def PlotObstacle(self, Position, Radius):
         
-        theta = np.linspace(0, 2*np.pi, 100)    #   Angle values
+        Theta = np.linspace(0, 2*np.pi, 100)    #   Angle values
 
         #   Creating circle coordinates in the XY plane
-        x = Position[0] + Radius * np.cos(theta)
+        x = Position[0] + Radius * np.cos(Theta)
         y = np.zeros_like(x)
-        z = Position[1] + Radius * np.sin(theta)
+        z = Position[1] + Radius * np.sin(Theta)
 
         #   Plots the circle
         self.ax.plot(x, y, z, linestyle='-', color='yellow', linewidth=2)
