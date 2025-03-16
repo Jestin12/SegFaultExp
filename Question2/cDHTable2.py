@@ -26,7 +26,6 @@ import math
 class cDHTable:
 
     # Constant definitions
-    TABLE_ROWS = 4
     TABLE_COLUMNS = 4
     D = 0
     THETA = 1
@@ -39,13 +38,21 @@ class cDHTable:
     # Initialise DH Table 
     def __init__(self, JointAngles, S1, S4):
         self.JointAngles = JointAngles
-        self.DHTable = np.zeros((6, 4))
+        self.num_joints = len(JointAngles)
+        self.DHTable = np.zeros((self.num_joints, self.TABLE_COLUMNS))
 
-        Di = [S1, 0, 0, self.L3 + S4]
-        Ai = [0, self.L2, 0, 0]
-        AlphaI = [math.pi/2,0,-(math.pi/2),0]
+        if self.num_joints == 4:
+            Di = [S1, 0, 0, self.L3 + S4]
+            Ai = [0, self.L2, 0, 0]
+            AlphaI = [math.pi/2,0,-(math.pi/2),0]
+        elif self.num_joints == 6:
+            Di = [163, 0, 0, 127, 100, 100]
+            Ai = [0, -425, -392, 0, 0, 0]
+            AlphaI = [(math.pi)/2, 0, 0, (math.pi)/2, -(math.pi/2), 0]
+        else:
+            print("Incompatible Joint Angle Vector. Incorrect number of angles?")
 
-        for row in range(self.TABLE_ROWS):
+        for row in range(self.num_joints):
             self.DHTable[row][self.D] = Di[row]
             self.DHTable[row][self.THETA] = self.JointAngles[row]
             self.DHTable[row][self.A] = Ai[row]

@@ -17,36 +17,43 @@ import numpy as np
 
 class cArmKinematics:
 
-    JOINTS = 6
     TRANSFORM_DIM = 4
     WORKSPACE_DIM = 3
 
     # Class constructor 
-    def __init__(self, DHTable):
+    def __init__(self, DHTable, num_joints):
         self.DHTable = DHTable
+        self.num_joints = num_joints
 
 
     #Check for singularites using Jacobian matrices
     def mCheckCorrectness(self):
         #Initialise the position and rotation vectors
-        PositionVector = np.array([np.zeros(self.WORKSPACE_DIM) for _ in range(self.JOINTS)])
-        RotationVector = np.array([np.eye(self.WORKSPACE_DIM) for _ in range(self.JOINTS)])
-        LinearVelocity = np.array([np.zeros(self.WORKSPACE_DIM) for _ in range(self.JOINTS)])
-        AngularVelocity = np.array([np.zeros(self.WORKSPACE_DIM) for _ in range(self.JOINTS)])
+        PositionVector = np.array([np.zeros(self.WORKSPACE_DIM) for _ in range(self.num_joints)])
+        RotationVector = np.array([np.eye(self.WORKSPACE_DIM) for _ in range(self.num_joints)])
+        LinearVelocity = np.array([np.zeros(self.WORKSPACE_DIM) for _ in range(self.num_joints)])
+        AngularVelocity = np.array([np.zeros(self.WORKSPACE_DIM) for _ in range(self.num_joints)])
 
         #Obtain the position, rotation, linear velocity and angular velocity vectors from the joint pose
-        for FrameNum in range(self.JOINTS):
+        for FrameNum in range(self.num_joints):
             PositionVector[FrameNum] = self.jointPoseGlob[FrameNum][:self.WORKSPACE_DIM, -1]
             RotationVector[FrameNum] = self.jointPoseGlob[FrameNum][:self.WORKSPACE_DIM, :self.WORKSPACE_DIM]
             AngularVelocity[FrameNum] = RotationVector[FrameNum][:, -1]
             LinearVelocity[FrameNum] = np.cross(AngularVelocity[FrameNum], PositionVector[-1] - PositionVector[FrameNum])
 
         #Compute the Jacobian matrix
-        J = np.zeros((6,6))
-        J = np.vstack((np.transpose(LinearVelocity), np.transpose(AngularVelocity)))
+        # J = np.zeros((self.num_joints,self.num_joints))
+        # J = np.vstack((np.transpose(LinearVelocity), np.transpose(AngularVelocity)))
+
+        J = np.zeros((self.WORKSPACE_DIM + self.WORKSPACE_DIM, self.num_joints))
+        for FrameNum in range(self.num_joints):
+            J[:self.WORKSPACE_DIM, FrameNum] = LinearVelocity[FrameNum]
+            J[self.WORKSPACE_DIM:, FrameNum] = AngularVelocity[FrameNum]
+
 
         #Check for singularites
-        if np.linalg.det(J) == 0:
+        singular = np.linalg.matrix_rank(J) < min(J.shape)
+        if singular:
             print("Singularities detected")
         else:
             print("No singularities detected")
@@ -57,9 +64,9 @@ class cArmKinematics:
 
     # Determine the final end effector position 
     def mGetAllJointGlobPose(self):
-        self.jointPoseGlob = np.array([np.eye(self.TRANSFORM_DIM) for _ in range(self.JOINTS)])
+        self.jointPoseGlob = np.array([np.eye(self.TRANSFORM_DIM) for _ in range(self.num_joints)])
      
-        for FrameNum in range(self.JOINTS):
+        for FrameNum in range(self.num_joints):
             self.jointPoseGlob[FrameNum] = self.jointPoseGlob[FrameNum-1]@self.DHTable.mConstructHT(FrameNum, Standard=True)
 
         return self.jointPoseGlob
