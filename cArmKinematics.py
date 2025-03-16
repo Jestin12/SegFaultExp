@@ -21,51 +21,55 @@ class cArmKinematics:
     WORKSPACE_DIM = 3
 
     # Class constructor 
-    def __init__(self, DHTable, num_joints):
+    def __init__(self, DHTable, NumJoints):
         self.DHTable = DHTable
-        self.num_joints = num_joints
+        self.NumJoints = NumJoints
 
 
     #Check for singularites using Jacobian matrices
     def mCheckCorrectness(self):
         #Initialise the position and rotation vectors
-        PositionVector = np.array([np.zeros(self.WORKSPACE_DIM) for _ in range(self.num_joints)])
-        RotationVector = np.array([np.eye(self.WORKSPACE_DIM) for _ in range(self.num_joints)])
-        LinearVelocity = np.array([np.zeros(self.WORKSPACE_DIM) for _ in range(self.num_joints)])
-        AngularVelocity = np.array([np.zeros(self.WORKSPACE_DIM) for _ in range(self.num_joints)])
+        PositionVector = np.array([np.zeros(self.WORKSPACE_DIM) for _ in range(self.NumJoints)])
+        RotationVector = np.array([np.eye(self.WORKSPACE_DIM) for _ in range(self.NumJoints)])
+        LinearVelocity = np.array([np.zeros(self.WORKSPACE_DIM) for _ in range(self.NumJoints)])
+        AngularVelocity = np.array([np.zeros(self.WORKSPACE_DIM) for _ in range(self.NumJoints)])
 
         #Obtain the position, rotation, linear velocity and angular velocity vectors from the joint pose
-        for FrameNum in range(self.num_joints):
-            PositionVector[FrameNum] = self.jointPoseGlob[FrameNum][:self.WORKSPACE_DIM, -1]
-            RotationVector[FrameNum] = self.jointPoseGlob[FrameNum][:self.WORKSPACE_DIM, :self.WORKSPACE_DIM]
+        for FrameNum in range(self.NumJoints):
+            PositionVector[FrameNum] = self.JointPoseGlob[FrameNum][:self.WORKSPACE_DIM, -1]
+            RotationVector[FrameNum] = self.JointPoseGlob[FrameNum][:self.WORKSPACE_DIM, :self.WORKSPACE_DIM]
             AngularVelocity[FrameNum] = RotationVector[FrameNum][:, -1]
             LinearVelocity[FrameNum] = np.cross(AngularVelocity[FrameNum], PositionVector[-1] - PositionVector[FrameNum])
 
-        J = np.zeros((self.WORKSPACE_DIM + self.WORKSPACE_DIM, self.num_joints))
-        for FrameNum in range(self.num_joints):
+        J = np.zeros((self.WORKSPACE_DIM + self.WORKSPACE_DIM, self.NumJoints))
+
+        for FrameNum in range(self.NumJoints):
             J[:self.WORKSPACE_DIM, FrameNum] = LinearVelocity[FrameNum]
             J[self.WORKSPACE_DIM:, FrameNum] = AngularVelocity[FrameNum]
 
 
         #Check for singularites
-        singular = np.linalg.matrix_rank(J) < min(J.shape)
-        if singular:
+        Singular = np.linalg.matrix_rank(J) < min(J.shape)
+
+        if Singular:
             print("Singularities detected")
+
         else:
             print("No singularities detected")
 
+
     def mEndeffectorPosition(self):
-        return self.jointPoseGlob[-1][:self.WORKSPACE_DIM, -1]
+        return self.JointPoseGlob[-1][:self.WORKSPACE_DIM, -1]
 
 
     # Determine the final end effector position 
     def mGetAllJointGlobPose(self):
-        self.jointPoseGlob = np.array([np.eye(self.TRANSFORM_DIM) for _ in range(self.num_joints)])
+        self.JointPoseGlob = np.array([np.eye(self.TRANSFORM_DIM) for _ in range(self.NumJoints)])
      
-        for FrameNum in range(self.num_joints):
-            self.jointPoseGlob[FrameNum] = self.jointPoseGlob[FrameNum-1]@self.DHTable.mConstructHT(FrameNum, Standard=True)
+        for FrameNum in range(self.NumJoints):
+            self.JointPoseGlob[FrameNum] = self.JointPoseGlob[FrameNum-1]@self.DHTable.mConstructHT(FrameNum, Standard=True)
 
-        return self.jointPoseGlob
+        return self.JointPoseGlob
 
 
     

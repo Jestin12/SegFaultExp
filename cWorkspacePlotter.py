@@ -15,7 +15,8 @@ from cDHTable import cDHTable
 #                   robot arm using the DHTable2 class and extracting the end effector 
 #                   position using the ArmKinematics2 class, for every possible combination
 #                   of joint angles and joint extrusions.
-#
+#                   
+#                   All values should be in millimeters or radians
 #
 # Dependencies:     matplotlib.pyplot   numpy   ArmKinematics2  DHTable2
 
@@ -27,7 +28,7 @@ class cWorkspacePlotter():
     NUM_POINTS = 20
 
     #   cWorkspacePlotter constructor, receives joint limits
-    def __init__(self, S1Lowlim, S1Uplim, S4LowLim, S4UpLim, Theta2LowLim, Theta2UpLim, Theta3LowLim, Theta3UpLim):
+    def __init__(self, S1Lowlim = 0, S1Uplim = 500, S4LowLim = 0, S4UpLim = 50, Theta2LowLim = 0, Theta2UpLim = 2*np.pi, Theta3LowLim = 0, Theta3UpLim = 2*np.pi):
         self.S1Lowlim = S1Lowlim
         self.S1Uplim = S1Uplim
 
@@ -55,7 +56,7 @@ class cWorkspacePlotter():
                         JointAngles = [0, Theta2, Theta3 - np.pi/2, 0]
                         Table = cDHTable(JointAngles, S1, S2)
 
-                        Kinematics = cArmKinematics(Table)  
+                        Kinematics = cArmKinematics(Table, 4)  
                         Kinematics.mGetAllJointGlobPose()
                         EndEffectorPosition.append(Kinematics.mEndeffectorPosition())
 
