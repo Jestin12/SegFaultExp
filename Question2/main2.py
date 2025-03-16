@@ -28,23 +28,27 @@ import numpy as np
 # ************************************************************************************
 
 
-THETA_1 = math.radians(30)
-THETA_2 = math.radians(60) - math.radians(90)
+THETA_2 = math.radians(30)
+THETA_3 = math.radians(60)
+S1 = 500
+S4 = 50
 
-JointAngles = [0,THETA_1,THETA_2,0]
+JointAngles = [0,THETA_2,THETA_3 - math.radians(90),0]
 
-Table1 = cDHTable(JointAngles, 500, 50)
+Table1 = cDHTable(JointAngles, S1, S4)
 
 
-print(Table1.mConstructHT(0))
-print(Table1.mConstructHT(1))
-print(Table1.mConstructHT(2))
-print(Table1.mConstructHT(3))
+# print(Table1.mConstructHT(0))
+# print(Table1.mConstructHT(1))
+# print(Table1.mConstructHT(2))
+# print(Table1.mConstructHT(3))
 
 
 Kinematics = cArmKinematics(Table1)
 
 Transforms =  Kinematics.mGetAllJointGlobPose()
+
+np.set_printoptions(suppress=True)
 
 print("Joint Positions: \n", Transforms.round(2), "\n")
 
@@ -56,12 +60,12 @@ print("Takes about 20 seconds to render the workspace plot")
 print("Close the workspace plot to view the frames plot")
 
 
-# Plotter = cWorkspacePlotter(50, 100, 10, 30, -4*np.pi/5, np.pi/2, -4*np.pi/3, 4*np.pi/3)
-# Plotter.mPlotWorkspace()
+Plotter = cWorkspacePlotter(50, 100, 10, 30, -4*np.pi/5, np.pi/2, -4*np.pi/3, 4*np.pi/3)
+Plotter.mPlotWorkspace()
 
-# visualiser = cArmVisualiser()
-# visualiser.mPlotUR5e(Transforms)
+visualiser = cArmVisualiser()
+visualiser.mPlotUR5e(Transforms)
 
-# visualiser.Show()
+visualiser.Show()
 
 

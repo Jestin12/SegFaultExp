@@ -37,12 +37,12 @@ class cDHTable:
     L3 = 450
 
     # Initialise DH Table 
-    def __init__(self, JointAngles, S1, s4):
+    def __init__(self, JointAngles, S1, S4):
         self.JointAngles = JointAngles
         self.DHTable = np.zeros((6, 4))
 
-        Di = [S1, 0, 0, 450 + s4]
-        Ai = [0, 600, 0, 0]
+        Di = [S1, 0, 0, self.L3 + S4]
+        Ai = [0, self.L2, 0, 0]
         AlphaI = [math.pi/2,0,-(math.pi/2),0]
 
         for row in range(self.TABLE_ROWS):
