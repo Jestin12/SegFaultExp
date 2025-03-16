@@ -10,7 +10,7 @@ import numpy as np
 
 # *************************** cWorkspacePlotter.py ***************************************
 
-# Filename:         main2.py
+# Filename:         main.py
 # Author:           Alfie
 
 # Description:      The file is the main code of the Question2 robot arm simulator,
@@ -33,6 +33,7 @@ import numpy as np
 # Suppress scientific notation
 np.set_printoptions(suppress=True)
 
+# Perform main calculations and operations
 def PerformCalcs(JointAngles, S1, S4):
     DHTable = cDHTable(JointAngles, S1, S4)
     Kinematics = cArmKinematics(DHTable, len(JointAngles))
@@ -46,6 +47,7 @@ def PerformCalcs(JointAngles, S1, S4):
         visualiser.PlotObstacle([400,0], 300)
     visualiser.Show()
 
+#Prompt user for input
 while(1):
     print("Would you like to simulate a 4 DOF or 6 DOF manipualtor? (enter 4 or 6)\n")
     ManType = int(input("DOF: "))
