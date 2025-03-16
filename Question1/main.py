@@ -2,6 +2,8 @@ from cDHTable import cDHTable
 from cArmKinematics import cArmKinematics
 from cArmVisualiser import cArmVisualiser
 import numpy as np
+from scipy.spatial.transform import Rotation as R
+import numpy as np
 
 
 # *************************** main.py ***************************************
@@ -33,12 +35,12 @@ import numpy as np
 
 while(1):
     print("Enter the angles for the robot arm in degrees\n")
-    Base = int(input("Base angle: "))
-    Shoulder = int(input("Shoulder angle: "))
-    Elbow = int(input("Elbow angle: "))
-    Wrist1 = int(input("Wrist1 angle: "))
-    Wrist2 = int(input("Wrist2 angle: "))
-    Wrist3 = int(input("Wrist3 angle: "))
+    Base = float(input("Base angle: "))
+    Shoulder = float(input("Shoulder angle: "))
+    Elbow = float(input("Elbow angle: "))
+    Wrist1 = float(input("Wrist1 angle: "))
+    Wrist2 = float(input("Wrist2 angle: "))
+    Wrist3 = float(input("Wrist3 angle: "))
 
     JointAngles = [np.radians(Base), 
                    np.radians(Shoulder), 
@@ -68,13 +70,21 @@ while(1):
     Ry = np.arctan2(-RotationMatrix[2, 0], np.sqrt(RotationMatrix[2, 1]**2 + RotationMatrix[2, 2]**2))  
 
     # Roll (Rotation about X-axis)
-    Rx = np.arctan2(RotationMatrix[2, 1], RotationMatrix[2, 2])  
+    Rx = np.arctan2(RotationMatrix[2, 1], RotationMatrix[2, 2])
 
+    #Convert euler angles to rotation vector
+    r = R.from_euler('ZYX', (Rz, Ry, Rx))
+    RotVec = r.as_rotvec()
 
     #Print the Euler angles
     print("Roll (Rx): ", round(Rx, 3))
     print("Pitch (Ry): ", round(Ry, 3))
     print("Yaw (Rz): ", round(Rz, 3))
+
+    #Print Rotation Vector
+    print("Rx: ", round(RotVec[0], 3))
+    print("Ry: ", round(RotVec[1], 3))
+    print("Rz: ", round(RotVec[2], 3))
 
     #Instantiate the visualiser and plot the frames
     Visualiser = cArmVisualiser()
