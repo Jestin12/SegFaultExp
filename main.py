@@ -33,12 +33,11 @@ import numpy as np
 # Suppress scientific notation
 np.set_printoptions(suppress=True)
 
-<<<<<<< Updated upstream
+
 # Perform main calculations and operations
-=======
 #   Performs forward kinematics calculations for the given joint parameters and plots
 #   the resultant frames on a 3D figure
->>>>>>> Stashed changes
+
 def PerformCalcs(JointAngles, S1, S4):
     DHTable = cDHTable(JointAngles, S1, S4)
     Kinematics = cArmKinematics(DHTable, len(JointAngles))
@@ -47,9 +46,7 @@ def PerformCalcs(JointAngles, S1, S4):
     print("Joint Positions: \n", Transforms.round(2), "\n")
     print("End Effector Position: \n",Kinematics.mEndeffectorPosition().round(2), "\n")
 
-<<<<<<< Updated upstream
 #Prompt user for input
-=======
     Kinematics.mCheckCorrectness()
     Visualiser = cArmVisualiser()
     Visualiser.mPlotUR5e(Transforms)
@@ -61,7 +58,6 @@ def PerformCalcs(JointAngles, S1, S4):
 
 #   Infinite loop used to interact with the user to select the desired calculation
 #   for the desired manipulator system
->>>>>>> Stashed changes
 while(1):
     print("Would you like to simulate a 4 DOF or 6 DOF manipualtor? (enter 4 or 6)\n")
 
