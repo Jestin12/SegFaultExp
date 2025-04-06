@@ -1,6 +1,20 @@
 import pickle
 import numpy as np
 
+'''
+******************************************* Unpickle.py ***************************************
+
+Author:         Neel, Jestin
+
+Description:    Analyses the valid.p file which contains the training data for the machine 
+                learning model. Used to extract class labels and image sizes of the training
+                images
+
+Dependencies:   pickle      numpy
+
+***********************************************************************************************
+'''
+
 # Load the .p file
 p_file_path = 'valid.p'
 with open(p_file_path, 'rb') as f:
