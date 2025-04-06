@@ -1,3 +1,4 @@
+import json
 import torch
 from torchvision import transforms
 from PIL import Image
@@ -8,16 +9,19 @@ from pathlib import Path
 import numpy as np
 import csv
 from datetime import datetime
-import json
 
 class Pedestrian:
+    
+    
     def __init__(self, ModelPath, SaveDirectory, InputDirectory):
         self.SaveDirectory = SaveDirectory
         self.InputDirectory = InputDirectory
-        self.ModelPath = ModelPath
         
         # For statistics tracking
         self.detection_stats = {}
+        
+        # Store original images and processed results for display at the end
+        self.processed_results = {}
         
         # Device selection (CUDA if available, otherwise CPU)
         self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -27,7 +31,7 @@ class Pedestrian:
         self.model = self.model.to(self.device)
 
         # Load the model weights
-        checkpoint = torch.load(self.ModelPath, map_location=self.device)
+        checkpoint = torch.load(ModelPath, map_location=self.device)
         self.model.load_state_dict(checkpoint["model"])  # Assuming state_dict is saved under this key
         self.model.eval()  # Set the model to evaluation mode
 
@@ -45,6 +49,7 @@ class Pedestrian:
         3: 'Ahead only',
         4: 'Roundabout mandatory',
         }
+        
         
     def detect_red_cylinders(self, image):
         # Convert the image to HSV (Hue, Saturation, Value) color space
@@ -66,6 +71,11 @@ class Pedestrian:
 
         # Combine both masks
         red_mask = cv2.bitwise_or(mask1, mask2)
+        
+        # Apply morphological operations to clean up the mask
+        kernel = np.ones((5,5), np.uint8)
+        red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_OPEN, kernel)
+        red_mask = cv2.morphologyEx(red_mask, cv2.MORPH_CLOSE, kernel)
 
         # Bitwise-AND the red mask with the original image
         red_cylinders = cv2.bitwise_and(image, image, mask=red_mask)
@@ -76,6 +86,7 @@ class Pedestrian:
         # Draw bounding boxes around the detected red cylinders
         output_image = image.copy()
         detected_count = 0
+        cylinder_boxes = []
 
         for contour in contours:
             # Approximate the contour to a polygon and get bounding box
@@ -84,14 +95,11 @@ class Pedestrian:
 
             if cv2.contourArea(contour) > 25000:  # Consider larger contours (like the red cylinders)
                 x, y, w, h = cv2.boundingRect(approx)
-                cv2.rectangle(output_image, (x, y), (x + w, y + h), (0, 255, 0), 2)
                 detected_count += 1
-        
-        cv2.imshow("Detected Red Cylinders", output_image)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+                cylinder_boxes.append((x, y, w, h))
 
-        return output_image, detected_count
+        return output_image, detected_count, cylinder_boxes
+
 
     def Crop(self, ImageName, rosbag_name):
         image_path = os.path.join(self.InputDirectory, rosbag_name, ImageName)
@@ -108,11 +116,20 @@ class Pedestrian:
                 print(f"Error loading image at path: {image_path}")
                 return []
             else:
+                # Store the original image
+                image_key = f"{rosbag_name}/{ImageName}"
+                self.processed_results[image_key] = {
+                    'original_image': image.copy()
+                }
+                
                 # Detect red cylinders
-                output_image, red_cylinder_count = self.detect_red_cylinders(image)
+                _, red_cylinder_count, cylinder_boxes = self.detect_red_cylinders(image)
+                
+                # Store cylinder detection results
+                self.processed_results[image_key]['cylinder_boxes'] = cylinder_boxes
                 
                 # Store detection statistics for this image
-                self.detection_stats[f"{rosbag_name}/{ImageName}"] = {
+                self.detection_stats[image_key] = {
                     "red_cylinders": red_cylinder_count,
                     "traffic_signs": 0  # Will be updated later
                 }
@@ -127,12 +144,11 @@ class Pedestrian:
             
                 contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
 
-                # Create a copy of the original image for visualization
-                output_image = image.copy()
-
                 # Loop over the contours and crop the traffic signs
                 cropped_signs = []
                 sign_count = 0
+                sign_boxes = []
+                
                 for contour in contours:
                     # Approximate the contour to a polygon and get bounding box
                     epsilon = 0.04 * cv2.arcLength(contour, True)
@@ -146,11 +162,15 @@ class Pedestrian:
                         cropped_sign = image[y:y+h, x:x+w]
                         cropped_signs.append(cropped_sign)
                         sign_count += 1
+                        
+                        # Store the location of the sign (adjusting for the resize)
+                        sign_boxes.append((x*2, y*2, w*2, h*2))
 
-                        cv2.rectangle(output_image, (x, y), (x + w, y + h), (0, 255, 0), 2)
-
+                # Store sign detection results
+                self.processed_results[image_key]['sign_boxes'] = sign_boxes
+                
                 # Update the detection statistics
-                self.detection_stats[f"{rosbag_name}/{ImageName}"]["traffic_signs"] = sign_count
+                self.detection_stats[image_key]["traffic_signs"] = sign_count
                 
                 # Create save directory if it doesn't exist
                 save_directory = os.path.join(self.SaveDirectory, rosbag_name)
@@ -166,6 +186,7 @@ class Pedestrian:
                     ImagePaths.append(os.path.join(rosbag_name, f"cropped_{i+1}_{ImageName}"))
 
                 return ImagePaths
+
 
     def Identify(self, ImagePath):
         # Split the ImagePath to get the rosbag name and file name
@@ -201,8 +222,15 @@ class Pedestrian:
             if "classifications" not in self.detection_stats[image_key]:
                 self.detection_stats[image_key]["classifications"] = []
             self.detection_stats[image_key]["classifications"].append(predicted_label)
+            
+            # Store the classification result with the sign boxes
+            sign_idx = int(file_name.split('_')[1]) - 1  # Get the sign index from filename
+            if 'sign_classifications' not in self.processed_results[image_key]:
+                self.processed_results[image_key]['sign_classifications'] = {}
+            self.processed_results[image_key]['sign_classifications'][sign_idx] = predicted_label
         
         return predicted_label
+
 
     def Classify(self, ImageName, rosbag_name):
         CroppedImages = self.Crop(ImageName, rosbag_name)
@@ -214,23 +242,68 @@ class Pedestrian:
             
         return classifications
     
+    
+    def display_processed_image(self, image_key):
+        """Display the original image with cylinders and traffic signs labeled"""
+        if image_key not in self.processed_results:
+            print(f"No processed results found for {image_key}")
+            return
+        
+        result = self.processed_results[image_key]
+        img = result['original_image'].copy()
+        
+        # Draw bounding boxes for cylinders
+        if 'cylinder_boxes' in result:
+            for i, (x, y, w, h) in enumerate(result['cylinder_boxes']):
+                cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                cv2.putText(img, f"Cylinder {i+1}", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+        
+        # Draw bounding boxes for signs with their classifications
+        if 'sign_boxes' in result:
+            for i, (x, y, w, h) in enumerate(result['sign_boxes']):
+                cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+                
+                # Add classification label if available
+                label = "Unknown"
+                if 'sign_classifications' in result and i in result['sign_classifications']:
+                    label = result['sign_classifications'][i]
+                
+                cv2.putText(img, f"Sign {i+1}: {label}", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 2)
+        
+        # Display the image
+        cv2.imshow(f"Processed Image: {image_key}", img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+        
+    
     def save_detection_stats(self, output_file="detection_stats.csv"):
         """Save detection statistics to a CSV file"""
         with open(output_file, 'w', newline='') as csvfile:
-            fieldnames = ['image_path', 'red_cylinders', 'traffic_signs', 'expected_signs', 'detected_correctly', 'classifications']
+            fieldnames = ['image_path', 'red_cylinders', 'traffic_signs', 'expected_signs','expected_cylinders', 'detected_correctly', 'classifications']
             writer = csv.DictWriter(csvfile, fieldnames=fieldnames)
             
+            # print(self.detection_stats.items())
+
+            correct_count = 0
+
             writer.writeheader()
             for image_path, stats in self.detection_stats.items():
                 # We expect 2 signs per image
                 expected_signs = 2
-                detected_correctly = stats['traffic_signs'] == expected_signs
-                
+
+                # We expect 2 cylinders per image
+                expected_cylinders = 2
+
+                detected_correctly = stats['traffic_signs'] == expected_signs and stats['red_cylinders'] == expected_cylinders
+
+                correct_count += 1 if detected_correctly else 0
+
                 writer.writerow({
                     'image_path': image_path,
                     'red_cylinders': stats.get('red_cylinders', 0),
                     'traffic_signs': stats.get('traffic_signs', 0),
                     'expected_signs': expected_signs,
+                    'expected_cylinders': expected_cylinders,
                     'detected_correctly': detected_correctly,
                     'classifications': ', '.join(stats.get('classifications', []))
                 })
@@ -239,15 +312,17 @@ class Pedestrian:
         
         # Calculate and print summary statistics
         total_images = len(self.detection_stats)
-        correct_detections = sum(1 for stats in self.detection_stats.values() if stats.get('traffic_signs', 0) == 2)
-        
+        correct_signs_detections = sum(1 for stats in self.detection_stats.values() if stats.get('traffic_signs', 0) == 2)
+        correct_cylinder_detections = sum(1 for stats in self.detection_stats.values() if stats.get('red_cylinders', 0) == 2)
+
         print(f"\nSummary Statistics:")
         print(f"Total images processed: {total_images}")
-        print(f"Images with exactly 2 signs detected: {correct_detections} ({correct_detections/total_images*100:.1f}%)")
-        print(f"Images with incorrect detections: {total_images - correct_detections} ({(total_images-correct_detections)/total_images*100:.1f}%)")
+        print(f"Images with exactly 2 signs detected: {correct_signs_detections} ({correct_signs_detections/total_images*100:.1f}%)")
+        print(f"Images with exactly 2 red_cylinders detected: {correct_cylinder_detections} ({correct_cylinder_detections/total_images*100:.1f}%)")
+        print(f"Images with correct detections: {correct_count} ({(correct_count)/total_images*100:.1f}%)")
 
 
-def process_all_rosbags(ModelPath, OutputDirectory, InputDirectory, display_images=False):
+def process_all_rosbags(ModelPath, OutputDirectory, InputDirectory, display_first_image=True):
     detector = Pedestrian(ModelPath, OutputDirectory, InputDirectory)
     
     # Get all rosbag directories in the InputDirectory
@@ -255,6 +330,8 @@ def process_all_rosbags(ModelPath, OutputDirectory, InputDirectory, display_imag
     
     total_rosbags = len(rosbag_dirs)
     print(f"Found {total_rosbags} rosbag directories to process")
+    
+    first_image_key = None
     
     # Process each rosbag directory
     for i, rosbag_name in enumerate(rosbag_dirs):
@@ -271,14 +348,18 @@ def process_all_rosbags(ModelPath, OutputDirectory, InputDirectory, display_imag
             print(f"  Processing image {j+1}/{len(image_files)}: {image_name}")
             detector.Classify(image_name, rosbag_name)
             
-            # Optionally display images (useful for debugging)
-            if display_images:
-                cv2.waitKey(0)
-                cv2.destroyAllWindows()
-                
+            # Store the first image key for display later
+            if first_image_key is None:
+                first_image_key = f"{rosbag_name}/{image_name}"
+    
     # Generate timestamp for unique filename
     timestamp = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
     detector.save_detection_stats(f"Question3_Solution/detection_stats_{timestamp}.csv")
+    
+    # Display the first processed image with bounding boxes and labels
+    if display_first_image and first_image_key is not None:
+        print(f"\nDisplaying results for the first processed image: {first_image_key}")
+        detector.display_processed_image(first_image_key)
     
     return detector.detection_stats
 
@@ -288,13 +369,17 @@ def main():
     OutputDirectory = 'Question3_Solution/cropped_images/'  # Output directory for cropped signs
     ModelPath = "Question3_Solution/Models/best_model_final.pth"
     
-    # Process all rosbags and get statistics
-    stats = process_all_rosbags(ModelPath, OutputDirectory, InputDirectory, display_images=False)
+    # Process all rosbags and get statistics, then display the first image
+    stats = process_all_rosbags(ModelPath, OutputDirectory, InputDirectory, display_first_image=True)
     print("\nProcessing completed!")
 
-    TerminalOutput = json.dumps(stats, indent = 4)
+    output = input("Should I print the results to the terminal? (Y) ")
+    if output == "Y":
+        TerminalOutput = json.dumps(stats, indent = 4)
 
-    print(TerminalOutput)
+        print(TerminalOutput)
+    
+    print("Code executed")
 
 if __name__ == '__main__':
     main()
