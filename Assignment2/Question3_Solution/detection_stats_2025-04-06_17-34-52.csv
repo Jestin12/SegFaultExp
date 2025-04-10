@@ -1,0 +1,13 @@
+image_path,red_cylinders,traffic_signs,expected_signs,detected_correctly,classifications
+rosbag2_2025_03_20-16_49_11/1.png,2,2,2,True,"Stop, Turn right"
+rosbag2_2025_03_20-16_49_11/2.png,2,2,2,True,"Stop, Turn right"
+rosbag2_2025_03_20-16_49_11/0.png,2,2,2,True,"Stop, Turn right"
+rosbag2_2025_03_20-16_49_11/3.png,2,2,2,True,"Stop, Turn right"
+rosbag2_2025_03_20-16_54_08/1.png,2,2,2,True,"Stop, Turn right"
+rosbag2_2025_03_20-16_54_08/2.png,2,2,2,True,"Stop, Turn right"
+rosbag2_2025_03_20-16_54_08/0.png,2,2,2,True,"Stop, Turn right"
+rosbag2_2025_03_20-16_56_50/1.png,1,2,2,False,"Stop, Turn right"
+rosbag2_2025_03_20-16_56_50/4.png,1,2,2,False,"Stop, Turn right"
+rosbag2_2025_03_20-16_56_50/2.png,1,2,2,False,"Stop, Turn right"
+rosbag2_2025_03_20-16_56_50/0.png,1,2,2,False,"Stop, Turn right"
+rosbag2_2025_03_20-16_56_50/3.png,1,2,2,False,"Stop, Turn right"
