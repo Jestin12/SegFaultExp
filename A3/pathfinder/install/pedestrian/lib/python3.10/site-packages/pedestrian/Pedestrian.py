@@ -17,6 +17,7 @@ from rclpy.node import Node
 
 from std_msgs.msg import String
 from sensor_msgs.msg import CompressedImage
+
 import numpy as np
 import cv2
 
@@ -39,7 +40,7 @@ class Pedestrian(Node):
         # self.timer = self.create_timer(timer_period, self.timer_callback)
         # self.i = 0
 
-        self.ImgSub = self.create_subscription(CompressedImage, 'camera/image/compressed', self.ImgSub_callback, 10)
+        self.ImgSub = self.create_subscription(CompressedImage, '/camera/image_raw/compressed', self.ImgSub_callback, 10)
 
 
         ############ Pedestrian stuff ######################################
@@ -78,9 +79,9 @@ class Pedestrian(Node):
         }
 
 
-        # Initialize the window once
-        cv2.namedWindow('Compressed Image', cv2.WINDOW_NORMAL)
-        cv2.moveWindow('Compressed Image', 0, 0)  # Set initial position
+        # # Initialize the window once
+        # cv2.namedWindow('Compressed Image', cv2.WINDOW_NORMAL)
+        # cv2.moveWindow('Compressed Image', 0, 0)  # Set initial position
 
 
     def timer_callback(self):
@@ -90,32 +91,26 @@ class Pedestrian(Node):
         self.get_logger().info('Publishing: "%s"' % msg.data)
         self.i += 1
 
-    def ImgSub_callback(self):
-        # Convert compressed image data to numpy array
-        np_arr = np.frombuffer(msg.data, np.uint8)
-        # Decode image
-        image = cv2.imdecode(np_arr, cv2.IMREAD_COLOR)
+    def ImgSub_callback(self, msg):
 
-        if image is not None:
-            cv2.imshow('Compressed Image', image)
+        ImgArray = np.frombuffer(msg.data, np.uint8)
+        Image = cv2.imdecode(ImgArray, cv2.IMREAD_COLOR)
 
-            # Put Crop image function here vvvvvv
-            cropped_signs = self.Crop(image)
-
-            predict_labels = Identify(cropped_signs)
-
-            msg = String()
-
-            msg.data = " ".join(predict_labels)
-
-            self.publisher_.publish(msg)
-
-            cv2.waitKey(1)
-        else:
-            self.get_logger().warn('Failed to decode image')
+        CroppedSigns = self.Crop(Image)
+        
+        Output = self.Identify(CroppedSigns)
 
 
-    def Crop(self, ImageName, rosbag_name):
+        new_msg = String()
+
+        new_msg.data = "responding"
+
+        new_msg.data = new_msg.data + " ".join(Output)
+
+        self.publisher_.publish(new_msg)
+
+
+    def Crop(self, image):
         '''
         Extracts the images of the signs from the input image and saves them in directory
         defined by SaveDirectory
@@ -186,11 +181,13 @@ class Pedestrian(Node):
                                     class names dictionary
         '''
         
-        predict_labels = []
+        predicted_labels = []
 
         for sign in cropped_signs:
 
             # Convert RGBA to RGB if necessary
+            img = Image.fromarray(cv2.cvtColor(sign, cv2.COLOR_BGR2RGB))  # Convert OpenCV to PIL
+
             if img.mode == 'RGBA':
                 img = img.convert('RGB')
             
@@ -203,7 +200,7 @@ class Pedestrian(Node):
 
             _, predicted_class = torch.max(output, 1)  # Get the predicted class index
 
-            predicted_label.append( self.class_names[predicted_class.item()] ) # Map index to class label
+            predicted_labels.append( self.class_names[predicted_class.item()] ) # Map index to class label
             
         
         return predicted_labels
