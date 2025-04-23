@@ -90,7 +90,7 @@ class Pedestrian(Node):
         self.get_logger().info('Publishing: "%s"' % msg.data)
         self.i += 1
 
-    def ImgSub_callback(self):
+    def ImgSub_callback(self, msg):
         # Convert compressed image data to numpy array
         np_arr = np.frombuffer(msg.data, np.uint8)
         # Decode image
@@ -102,7 +102,7 @@ class Pedestrian(Node):
             # Put Crop image function here vvvvvv
             cropped_signs = self.Crop(image)
 
-            predict_labels = Identify(cropped_signs)
+            predict_labels = self.Identify(cropped_signs)
 
             msg = String()
 
@@ -115,7 +115,7 @@ class Pedestrian(Node):
             self.get_logger().warn('Failed to decode image')
 
 
-    def Crop(self, ImageName, rosbag_name):
+    def Crop(self, image):
         '''
         Extracts the images of the signs from the input image and saves them in directory
         defined by SaveDirectory
@@ -191,6 +191,8 @@ class Pedestrian(Node):
         for sign in cropped_signs:
 
             # Convert RGBA to RGB if necessary
+            img = Image.fromarray(cv2.cvtColor(sign, cv2.COLOR_BGR2RGB))  # Convert OpenCV to PIL
+
             if img.mode == 'RGBA':
                 img = img.convert('RGB')
             
