@@ -29,7 +29,8 @@ class ImageRepublisher(Node):
         self.root = cv2.flip(cv_image, -1)  # Flip x-axis (0), y-axis(1), both (-1)
         
         # Convert back to ROS Image
-        flipped_msg = self.bridge.cv2_to_imgmsg(self.root, encoding="rgb8")
+        flipped_msg = CompressedImage()
+        flipped_msg.data = self.bridge.cv2_to_imgmsg(self.root, encoding="rgb8")
         flipped_msg.header = msg.header  # Keep the original timestamp
         self.image_pub.publish(flipped_msg)
         self.get_logger().info("Published flipped image")
