@@ -40,7 +40,7 @@ class Pedestrian(Node):
         # self.timer = self.create_timer(timer_period, self.timer_callback)
         # self.i = 0
 
-        self.ImgSub = self.create_subscription(CompressedImage, '/camera/image_raw/compressed', self.ImgSub_callback, 10)
+        self.ImgSub = self.create_subscription(CompressedImage, '/camera/image_flipped', self.ImgSub_callback, 10)
 
 
         ############ Pedestrian stuff ######################################

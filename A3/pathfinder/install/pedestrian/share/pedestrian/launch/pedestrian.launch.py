@@ -9,5 +9,11 @@ def generate_launch_description():
             namespace='pedestrian',
             executable='Pedestrian',
             name='pedestrian'
+        ),
+        Node(
+            package='pedestrian',
+            namespace='ImageFlipper',
+            executable='ImageFlipper',
+            name='ImageFlipper'
         )
     ])

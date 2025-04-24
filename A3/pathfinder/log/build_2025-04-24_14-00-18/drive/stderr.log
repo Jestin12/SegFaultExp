@@ -1,0 +1,5 @@
+  File "/home/jestin/SegFaultExp/A3/pathfinder/install/drive/lib/python3.10/site-packages/drive/driver.py", line 13
+    self.
+         ^
+SyntaxError: invalid syntax
+

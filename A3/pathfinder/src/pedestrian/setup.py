@@ -27,6 +27,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'ImageFlipper = pedestrian.ImageFlipper:main',
             'Pedestrian = pedestrian.Pedestrian:main'
         ],
     },
