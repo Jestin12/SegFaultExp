@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from sensor_msgs.msg import Image
+from sensor_msgs.msg import Image, CompressedImage
 from sensor_msgs.msg import LaserScan
 from cv_bridge import CvBridge
 import cv2
@@ -14,7 +14,7 @@ class ImageRepublisher(Node):
         self.bridge = CvBridge()
 
         # Publishers
-        self.image_pub = self.create_publisher(Image, "/camera/image_flipped", 10)
+        self.image_pub = self.create_publisher(CompressedImage, "/camera/image_flipped", 10)
         self.image_sub = self.create_subscription(Image, "/camera/image_raw", self.timer_callback, 10)
 
     def timer_callback(self, msg):
