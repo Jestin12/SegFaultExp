@@ -11,7 +11,6 @@ setup.py
 ../../build/pedestrian/pedestrian.egg-info/zip-safe
 Models/best_model_final.pth
 launch/pedestrian.launch.py
-pedestrian/ImageFlipper.py
 pedestrian/Pedestrian.py
 pedestrian/__init__.py
 pedestrian/network.py

@@ -1,4 +1,3 @@
 [console_scripts]
-ImageFlipper = pedestrian.ImageFlipper:main
 Pedestrian = pedestrian.Pedestrian:main
 

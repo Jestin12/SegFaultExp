@@ -29,6 +29,11 @@ from pedestrian.network import ResNet18
 import os
 from ament_index_python.packages import get_package_share_directory
 
+
+from collections import Counter
+
+
+
 class Pedestrian(Node):
 
     def __init__(self):
@@ -36,11 +41,12 @@ class Pedestrian(Node):
         # ROS Node stuff
         super().__init__('Pedestrian')
         self.publisher_ = self.create_publisher(String, 'Sign', 10)
+        self.AvgPub = self.create_publisher(String, 'ModeSign', 10)
         # timer_period = 0.5  # seconds
         # self.timer = self.create_timer(timer_period, self.timer_callback)
         # self.i = 0
 
-        self.ImgSub = self.create_subscription(CompressedImage, '/camera/image_flipped', self.ImgSub_callback, 10)
+        self.ImgSub = self.create_subscription(CompressedImage, '/camera/image_raw/compressed', self.ImgSub_callback, 10)
 
 
         ############ Pedestrian stuff ######################################
@@ -78,6 +84,9 @@ class Pedestrian(Node):
             4: 'Roundabout mandatory',
         }
 
+        self.SignRecord = []
+        self.CurrOutput = None
+
 
         # # Initialize the window once
         # cv2.namedWindow('Compressed Image', cv2.WINDOW_NORMAL)
@@ -96,18 +105,49 @@ class Pedestrian(Node):
         ImgArray = np.frombuffer(msg.data, np.uint8)
         Image = cv2.imdecode(ImgArray, cv2.IMREAD_COLOR)
 
+        flipped_image = cv2.flip(Image, -1)
+
         CroppedSigns = self.Crop(Image)
         
         Output = self.Identify(CroppedSigns)
 
+        msg2 = String()
+        msg2.data = "responding"
+        msg2.data = msg2.data + " ".join(Output)
+        self.publisher_.publish(msg2)
 
+        if len(Output) == 0:
+            Output.append("nothing")
+
+        
+        for i in Output:
+            if (len(self.SignRecord) <= 50):
+                self.SignRecord.append(i)
+
+            else:
+
+                self.SignRecord.pop(0)
+                self.SignRecord.append(i)
+
+        count = Counter(self.SignRecord)
+
+        most_common = count.most_common(1)
+        if most_common:
+            Mode = most_common[0][0]
+        else:
+            Mode = None  # or some default like 'Unknown'
+
+        
         new_msg = String()
 
         new_msg.data = "responding"
 
-        new_msg.data = new_msg.data + "  " + " ".join(Output)
 
-        self.publisher_.publish(new_msg)
+        if Mode != self.CurrOutput:
+            new_msg.data = new_msg.data + "  " + (Mode or "")
+            self.CurrOutput = Mode
+
+            self.AvgPub.publish(new_msg)
 
 
     def Crop(self, image):
