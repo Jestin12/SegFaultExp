@@ -1,4 +1,6 @@
-from setuptools import find_packages, setup
+from setuptools import setup
+import os
+import glob
 
 import os
 from glob import glob
@@ -8,23 +10,18 @@ package_name = 'drive'
 setup(
     name=package_name,
     version='0.0.0',
-    packages=find_packages(exclude=['test']),
-    data_files=[
-        ('share/ament_index/resource_index/packages',
-            ['resource/' + package_name]),
-        (os.path.join('share', package_name, 'launch'), glob('launch/*')),
-        ('share/' + package_name, ['package.xml']),
-    ],
+    packages=[package_name],
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='jestin',
-    maintainer_email='jestinji@outlook.com',
-    description='TODO: Package description',
-    license='Apache-2.0',
+    maintainer_email='jestin@example.com',
+    description='Drive package',
+    license='Apache License 2.0',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-			'CoordinateFinder = drive.coordinates:main' 
+			'CoordinateFinder = drive.coordinates:main',
+            'driver = drive.driver:main',
         ],
     },
 )

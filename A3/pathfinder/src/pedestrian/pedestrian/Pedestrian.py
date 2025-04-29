@@ -213,7 +213,7 @@ class Pedestrian(Node):
             approx = cv2.approxPolyDP(contour, epsilon, True)
 
             # Check if the contour is large enough to be a traffic sign
-            if 2000 < cv2.contourArea(contour) < 10000:  
+            if 1000 < cv2.contourArea(contour) < 10000:  
                 x, y, w, h = cv2.boundingRect(approx)
                 
                 # Value for the center point of each of the signs
