@@ -20,6 +20,7 @@ from sensor_msgs.msg import CompressedImage
 
 import numpy as np
 import cv2
+import json
 
 import torch
 from torchvision import transforms
@@ -85,20 +86,18 @@ class Pedestrian(Node):
         }
 
         self.SignRecord = []
+        self.RecentStopXY = []
+        self.RecentRightXY = []
+        self.RecentLeftXY = []
+
         self.CurrOutput = None
+        self.OutputCentre = [None, None]
 
 
         # # Initialize the window once
         # cv2.namedWindow('Compressed Image', cv2.WINDOW_NORMAL)
         # cv2.moveWindow('Compressed Image', 0, 0)  # Set initial position
 
-
-    def timer_callback(self):
-        msg = String()
-        msg.data = 'Hello World: %d' % self.i
-        self.publisher_.publish(msg)
-        self.get_logger().info('Publishing: "%s"' % msg.data)
-        self.i += 1
 
     def ImgSub_callback(self, msg):
 
@@ -107,27 +106,35 @@ class Pedestrian(Node):
 
         flipped_image = cv2.flip(Image, -1)
 
-        CroppedSigns = self.Crop(Image)
-        
-        Output = self.Identify(CroppedSigns)
+        CroppedSign, center_x, center_y = self.Crop(flipped_image)
+        Output, center_x, center_y = self.Identify(CroppedSign, center_x, center_y)
+
+        data1 = [Output, center_x, center_y]
+
+        self.get_logger().info(f'Identify() outputted: {data1}')
 
         msg2 = String()
-        msg2.data = "responding"
-        msg2.data = msg2.data + " ".join(Output)
+        msg2.data = "responding " + " ".join(str(item) for item in data1)
         self.publisher_.publish(msg2)
 
-        if len(Output) == 0:
-            Output.append("nothing")
-
         
-        for i in Output:
-            if (len(self.SignRecord) <= 50):
-                self.SignRecord.append(i)
+        match data1[0]:
+            case 'Stop':
+                self.RecentStopXY = [data1[1], data1[2]]
 
-            else:
+            case 'Turn right':
+                self.RecentRightXY = [data1[1], data1[2]]
 
-                self.SignRecord.pop(0)
-                self.SignRecord.append(i)
+            case 'Turn left':
+                self.RecentLeftXY = [data1[1], data1[2]]
+
+
+        if (len(self.SignRecord) <= 50):
+            self.SignRecord.append(data1[0])
+
+        else:
+            self.SignRecord.pop(0)
+            self.SignRecord.append(data1[0])
 
         count = Counter(self.SignRecord)
 
@@ -135,16 +142,26 @@ class Pedestrian(Node):
         if most_common:
             Mode = most_common[0][0]
         else:
-            Mode = None  # or some default like 'Unknown'
-
-        
-        new_msg = String()
-
-        new_msg.data = "responding"
-
+            Mode = "Unknown"  # or some default like 'Unknown'
 
         if Mode != self.CurrOutput:
-            new_msg.data = new_msg.data + "  " + (Mode or "")
+
+            new_msg = String()
+            new_msg.data = "responding"
+
+            match Mode:
+                case 'Stop':
+                    new_msg.data = new_msg.data + " Stop " + " ".join(str(item) for item in self.RecentStopXY)
+
+                case 'Turn right':
+                    new_msg.data = new_msg.data + " TurnRight " + " ".join(str(item) for item in self.RecentRightXY)
+
+                case 'Turn left':
+                    new_msg.data = new_msg.data + " TurnLeft " + " ".join(str(item) for item in self.RecentLeftXY)
+                case _:
+                    self.get_logger().info('Mode Error')
+
+             
             self.CurrOutput = Mode
 
             self.AvgPub.publish(new_msg)
@@ -185,9 +202,10 @@ class Pedestrian(Node):
         center_y = 0
 
         # Loop over the contours and crop the traffic signs
-        cropped_signs = []
+        cropped_sign = None
         sign_count = 0
         sign_boxes = []
+        centers = []
         
         for contour in contours:
             # Approximate the contour to a polygon and get bounding box
@@ -195,27 +213,28 @@ class Pedestrian(Node):
             approx = cv2.approxPolyDP(contour, epsilon, True)
 
             # Check if the contour is large enough to be a traffic sign
-            if cv2.contourArea(contour) > 2000:  
+            if 2000 < cv2.contourArea(contour) < 10000:  
                 x, y, w, h = cv2.boundingRect(approx)
                 
                 # Value for the center point of each of the signs
                 center_x = x + w // 2
                 center_y = y + h // 2
-                print("X:",center_x,"Y:",center_y)
+                # print("X:",center_x,"Y:",center_y)
+                # centers.append([center_x, center_y])
 
                 # Crop the detected traffic sign
                 cropped_sign = image[y:y+h, x:x+w]
-                cropped_signs.append(cropped_sign)
+                
                 sign_count += 1
                 
                 # Store the location of the sign (adjusting for the resize)
                 sign_boxes.append((x*2, y*2, w*2, h*2))
 
-        return cropped_signs
+        return cropped_sign, round(center_x, 2), round(center_y, 2)
 
 
 
-    def Identify(self, cropped_signs):
+    def Identify(self, cropped_sign, center_x, center_y):
 
         '''
         Passes in images to the ML and returns the classification of the image
@@ -229,29 +248,28 @@ class Pedestrian(Node):
                                     class names dictionary
         '''
         
-        predicted_labels = []
+        if not isinstance(cropped_sign, np.ndarray):
+            return ["x", center_x, center_y]
 
-        for sign in cropped_signs:
+        # Convert RGBA to RGB if necessary
+        img = Image.fromarray(cv2.cvtColor(cropped_sign, cv2.COLOR_BGR2RGB))  # Convert OpenCV to PIL
 
-            # Convert RGBA to RGB if necessary
-            img = Image.fromarray(cv2.cvtColor(sign, cv2.COLOR_BGR2RGB))  # Convert OpenCV to PIL
+        if img.mode == 'RGBA':
+            img = img.convert('RGB')
+        
+        img = self.preprocess(img)  # Apply preprocessing
+        img = img.unsqueeze(0)  # Add batch dimension
 
-            if img.mode == 'RGBA':
-                img = img.convert('RGB')
-            
-            img = self.preprocess(img)  # Apply preprocessing
-            img = img.unsqueeze(0)  # Add batch dimension
+        # Perform inference
+        with torch.no_grad():
+            output = self.model(img.to(self.device))
 
-            # Perform inference
-            with torch.no_grad():
-                output = self.model(img.to(self.device))
+        _, predicted_class = torch.max(output, 1)  # Get the predicted class index
 
-            _, predicted_class = torch.max(output, 1)  # Get the predicted class index
-
-            predicted_labels.append( self.class_names[predicted_class.item()] ) # Map index to class label
+        predicted_label = self.class_names[predicted_class.item()]  # Map index to class label
             
         
-        return predicted_labels
+        return [predicted_label, center_x, center_y]
     
 
 def main(args=None):
