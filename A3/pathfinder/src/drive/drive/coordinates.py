@@ -2,9 +2,12 @@ import rclpy
 from rclpy.node import Node
 
 from std_msgs.msg import String
-from geometry_msgs.msg import Twist, PoseStamped
+from geometry_msgs.msg import Twist, PoseStamped, PointStamped, Vector3Stamped
+
+import tf2_ros, tf2_geometry_msgs
 
 import numpy as np 
+import math 
 
 class CoordinateFinder(Node): 
 	def __init__(self): 
@@ -30,33 +33,61 @@ class CoordinateFinder(Node):
 		# Subscriber to Camera coordinates 
 		self.SignSub = self.create_subscription(String, 'ModeSign', self.coordinate_callback, 10)
 
+		self.tf_buffer = tf2_ros.Buffer()
+		self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
+
 
 
 	def coordinate_callback(self, msg): 
-		# Convert camera points to floats 
-		command = msg 
 
+		# Convert camera points to floats 
+		command = msg.data.split() 
+
+		x = float(command[-2]) 
+		y = float(command[-1]) 
 
 
 		# Transform from camera to LiDAR frame 
-		x = float(msg.x)
-		y = float(msg.y)
-		
-		camera_point = np.vstack(np.array([[x], [y]]), [1]) 
+		camera_point = np.vstack((np.array([[x], [y]]), [[1]])) 
 		
 		transformed_point = np.linalg.inv(self.K) @ camera_point
 		
 		lidar_point = self.CTL @ transformed_point
 
 
+		# Convert lidar_point into PoseStamped format 
+		lidar_point_msg = PointStamped()
+		lidar_point_msg.header.frame_id = 'lidar_link'
+		lidar_point_msg.header.stamp = self.get_clock().now().to_msg()
+		lidar_point_msg.point.x = lidar_point[0, 0]
+		lidar_point_msg.point.y = lidar_point[1, 0]
+		lidar_point_msg.point.z = lidar_point[2, 0]
+
+
+		# Find vector for movement direction 
+		direction_vector = lidar_point[:3].flatten()
+		direction_vector /= np.linalg.norm(direction_vector)
+
+		movement_vector = Vector3Stamped()
+		movement_vector.header.frame_id = 'lidar_link'  
+		movement_vector.header.stamp = self.get_clock().now().to_msg()
+		movement_vector.vector.x = direction_vector[0]
+		movement_vector.vector.y = direction_vector[1]
+		movement_vector.vector.z = direction_vector[2]
+
+
+
 
 		# Transform from robot to Nav2 frame 
 
-		robot_transformation = 
+		map_frame = 'map'
+		lidar_frame = 'base_link'
 
-		nav_point = 
+		robot_transformation = self.tf_buffer.lookup_transform(map_frame, lidar_frame, rclpy.time.Time())
 
-		
+		nav_point = tf2_geometry_msgs.do_transform_point(lidar_point_msg, robot_transformation)
+		transformed_vector = tf2_geometry_msgs.do_transform_vector3(movement_vector, robot_transformation)
+
 
 		# Add to current position of robot ?????????????????
 		# final_point = self.pose + nav_point
@@ -67,21 +98,20 @@ class CoordinateFinder(Node):
 		
 
 		# Publish updated waypoint 
-
 		goal_pose = PoseStamped()
 
-		goal_pose.pose.position.x = nav_point[0]
-		goal_pose.pose.position.y = nav_point[1]
-		goal_pose.pose.position.z = nav_point[2] 
+		goal_pose.pose.position.x = nav_point.point.x
+		goal_pose.pose.position.y = nav_point.point.y
+		goal_pose.pose.position.z = nav_point.point.z
 
 
-		# Publish an orientation 
+		yaw = math.atan2(transformed_vector.vector.y, transformed_vector.vector.x)
+		goal_pose.pose.orientation = self.findQuarternion(yaw) 
 		
-
-
 		self.CoordinatePub.publish(goal_pose)
 
-
+	
+	def findQuarternion(self, ): 
 
 
 
