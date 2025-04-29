@@ -9,7 +9,6 @@ setup.py
 ../../build/pedestrian/pedestrian.egg-info/requires.txt
 ../../build/pedestrian/pedestrian.egg-info/top_level.txt
 ../../build/pedestrian/pedestrian.egg-info/zip-safe
-Models/best_model_final.pth
 launch/pedestrian.launch.py
 pedestrian/Pedestrian.py
 pedestrian/__init__.py
