@@ -2,7 +2,7 @@ import rclpy
 from rclpy.node import Node
 
 from std_msgs.msg import String
-from geometry_msgs.msg import Twist, PoseStamped, PointStamped, Vector3Stamped
+from geometry_msgs.msg import Twist, PoseStamped, PointStamped, Vector3Stamped, Quaternion
 
 import tf2_ros, tf2_geometry_msgs
 
@@ -111,7 +111,13 @@ class CoordinateFinder(Node):
 		self.CoordinatePub.publish(goal_pose)
 
 	
-	def findQuarternion(self, ): 
+	def findQuarternion(self, yaw):
+		return Quaternion(
+        x=0.0,
+        y=0.0,
+        z=math.sin(yaw / 2.0),
+        w=math.cos(yaw / 2.0)
+    ) 
 
 
 
