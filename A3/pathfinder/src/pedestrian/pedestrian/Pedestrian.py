@@ -180,6 +180,9 @@ class Pedestrian(Node):
         edges = cv2.Canny(inverted, 35, 150)
     
         contours, _ = cv2.findContours(edges, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+        
+        center_x = 0
+        center_y = 0
 
         # Loop over the contours and crop the traffic signs
         cropped_signs = []
@@ -194,6 +197,11 @@ class Pedestrian(Node):
             # Check if the contour is large enough to be a traffic sign
             if cv2.contourArea(contour) > 2000:  
                 x, y, w, h = cv2.boundingRect(approx)
+                
+                # Value for the center point of each of the signs
+                center_x = x + w // 2
+                center_y = y + h // 2
+                print("X:",center_x,"Y:",center_y)
 
                 # Crop the detected traffic sign
                 cropped_sign = image[y:y+h, x:x+w]
