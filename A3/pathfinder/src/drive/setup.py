@@ -1,5 +1,8 @@
 from setuptools import find_packages, setup
 
+import os
+from glob import glob
+
 package_name = 'drive'
 
 setup(
@@ -21,6 +24,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+			'CoordinateFinder = drive.coordinates:main' 
         ],
     },
 )

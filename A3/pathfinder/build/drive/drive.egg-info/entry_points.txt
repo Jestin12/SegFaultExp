@@ -1,0 +1,3 @@
+[console_scripts]
+CoordinateFinder = drive.coordinates:main
+
