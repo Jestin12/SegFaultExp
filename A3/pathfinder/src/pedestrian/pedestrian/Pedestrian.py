@@ -41,7 +41,7 @@ class Pedestrian(Node):
 
         # ROS Node stuff
         super().__init__('Pedestrian')
-        self.publisher_ = self.create_publisher(String, 'Sign', 10)
+        # self.publisher_ = self.create_publisher(String, 'Sign', 10)
         self.AvgPub = self.create_publisher(String, 'ModeSign', 10)
         # timer_period = 0.5  # seconds
         # self.timer = self.create_timer(timer_period, self.timer_callback)
@@ -101,6 +101,8 @@ class Pedestrian(Node):
 
     def ImgSub_callback(self, msg):
 
+        self.get_logger().info('Image Received')
+
         ImgArray = np.frombuffer(msg.data, np.uint8)
         Image = cv2.imdecode(ImgArray, cv2.IMREAD_COLOR)
 
@@ -113,9 +115,9 @@ class Pedestrian(Node):
 
         self.get_logger().info(f'Identify() outputted: {data1}')
 
-        msg2 = String()
-        msg2.data = "responding " + " ".join(str(item) for item in data1)
-        self.publisher_.publish(msg2)
+        # msg2 = String()
+        # msg2.data = "responding " + " ".join(str(item) for item in data1)
+        # self.publisher_.publish(msg2)
 
         
         match data1[0]:
@@ -152,19 +154,28 @@ class Pedestrian(Node):
             match Mode:
                 case 'Stop':
                     new_msg.data = new_msg.data + " Stop " + " ".join(str(item) for item in self.RecentStopXY)
+                    self.CurrOutput = Mode
+                    self.AvgPub.publish(new_msg)
 
                 case 'Turn right':
                     new_msg.data = new_msg.data + " TurnRight " + " ".join(str(item) for item in self.RecentRightXY)
+                    self.CurrOutput = Mode
+                    self.AvgPub.publish(new_msg)
 
                 case 'Turn left':
                     new_msg.data = new_msg.data + " TurnLeft " + " ".join(str(item) for item in self.RecentLeftXY)
+                    self.CurrOutput = Mode
+                    self.AvgPub.publish(new_msg)
+
+                case 'x':
+                    self.get_logger().info('Mode is nothing')
                 case _:
                     self.get_logger().info('Mode Error')
 
              
-            self.CurrOutput = Mode
+            # self.CurrOutput = Mode
 
-            self.AvgPub.publish(new_msg)
+            # self.AvgPub.publish(new_msg)
 
 
     def Crop(self, image):
