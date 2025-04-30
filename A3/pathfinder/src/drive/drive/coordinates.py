@@ -1,5 +1,6 @@
 import rclpy
 from rclpy.node import Node
+from rclpy.time import Time
 
 from std_msgs.msg import String
 from geometry_msgs.msg import Twist, PoseStamped, PointStamped, Vector3Stamped, Quaternion
@@ -51,8 +52,6 @@ class CoordinateFinder(Node):
 			x = float(command[-2]) 
 			y = float(command[-1]) 
 
-			# Tranform camera x,y into lidar using two rotations 
-
 
 			# Transform from camera to LiDAR frame 
 			camera_point = np.vstack((np.array([[x], [y]]), [[1]])) 
@@ -99,14 +98,11 @@ class CoordinateFinder(Node):
 			map_frame = 'map'
 			lidar_frame = 'base_scan'
 
-			robot_transformation = self.tf_buffer.lookup_transform(map_frame, lidar_frame, self.get_clock().now())
+			robot_transformation = self.tf_buffer.lookup_transform(map_frame, lidar_frame, Time())
 
 			nav_point = tf2_geometry_msgs.do_transform_point(lidar_point_msg, robot_transformation)
 			transformed_vector = tf2_geometry_msgs.do_transform_vector3(movement_vector, robot_transformation)
 
-			robot_transformation = self.tf_buffer.lookup_transform(map_frame, lidar_frame, self.get_clock().now())
-
-			nav_point = tf2_geometry_msgs.do_transform_point(lidar_point_msg, robot_transformation)
 			# Add to current position of robot ?????????????????
 			# final_point = self.pose + nav_point
 
@@ -118,13 +114,13 @@ class CoordinateFinder(Node):
 			# Publish updated waypoint 
 			goal_pose = PoseStamped()
 
-			# goal_pose.header.stamp = self.get_clock().now()
-			# goal_pose.header.frame_id = "map"  
+			goal_pose.header.stamp = self.get_clock().now().to_msg()
+			goal_pose.header.frame_id = "map"  
 
 
 			goal_pose.pose.position.x = nav_point.point.x
 			goal_pose.pose.position.y = nav_point.point.y
-			goal_pose.pose.position.z = nav_point.point.z
+			goal_pose.pose.position.z = 0.0
 
 
 			yaw = math.atan2(transformed_vector.vector.y, transformed_vector.vector.x)
