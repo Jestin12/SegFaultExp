@@ -48,7 +48,7 @@ class Pedestrian(Node):
         # self.i = 0
 
         self.ImgSub = self.create_subscription(CompressedImage, '/camera/image_raw/compressed', self.ImgSub_callback, 10)
-
+        self.processed_img_pub = self.create_publisher(CompressedImage, '/pedestrian/processed_image', 10)
 
         ############ Pedestrian stuff ######################################
 
@@ -244,7 +244,50 @@ class Pedestrian(Node):
 
         return cropped_sign, round(center_x, 2), round(center_y, 2)
 
-
+    def display_processed_image(self, image_key):
+        """Publish the original image with cylinders and traffic signs labeled to a ROS topic"""
+        if image_key not in self.processed_results:
+            self.get_logger().warn(f"No processed results found for {image_key}")
+            return
+        
+        result = self.processed_results[image_key]
+        img = result['original_image'].copy()
+        
+        # Draw bounding boxes for cylinders
+        if 'cylinder_boxes' in result:
+            for i, (x, y, w, h) in enumerate(result['cylinder_boxes']):
+                cv2.rectangle(img, (x, y), (x + w, y + h), (0, 255, 0), 2)
+                cv2.putText(img, f"Cylinder {i+1}", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (0, 255, 0), 2)
+        
+        # Draw bounding boxes for signs with their classifications
+        if 'sign_boxes' in result:
+            for i, (x, y, w, h) in enumerate(result['sign_boxes']):
+                center_x = x + w // 2
+                center_y = y + h // 2
+                
+                cv2.rectangle(img, (x, y), (x + w, y + h), (255, 0, 0), 2)
+                
+                # Add classification label if available
+                label = "Unknown"
+                if 'sign_classifications' in result and i in result['sign_classifications']:
+                    label = result['sign_classifications'][i]
+                
+                cv2.putText(img, f"Sign {i+1}: {label}", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 0, 0), 2)
+                
+                cv2.circle(img, (center_x, center_y), 5, (0, 255, 255), -1)  # Yellow dot at center
+        
+                # Or display the center coordinates
+                cv2.putText(img, f"({center_x}, {center_y})", (center_x + 10, center_y), 
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 255, 255), 1)
+        
+        # Convert the image to a ROS CompressedImage message
+        msg = CompressedImage()
+        msg.header.stamp = self.get_clock().now().to_msg()
+        msg.format = "jpeg"
+        msg.data = np.array(cv2.imencode('.jpg', img)[1]).tobytes()
+        
+        # Publish the processed image
+        self.processed_img_pub.publish(msg)
 
     def Identify(self, cropped_sign, center_x, center_y):
 
