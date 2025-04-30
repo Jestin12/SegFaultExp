@@ -1,0 +1,25 @@
+[1.300s] Invoking command in '/home/jestin/SegFaultExp/A3/pathfinder/src/drive': PYTHONPATH=/home/jestin/SegFaultExp/A3/pathfinder/build/drive/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jestin/SegFaultExp/A3/pathfinder/install/drive/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/drive build --build-base /home/jestin/SegFaultExp/A3/pathfinder/build/drive/build install --record /home/jestin/SegFaultExp/A3/pathfinder/build/drive/install.log --single-version-externally-managed
+[1.562s] running egg_info
+[1.563s] writing ../../build/drive/drive.egg-info/PKG-INFO
+[1.563s] writing dependency_links to ../../build/drive/drive.egg-info/dependency_links.txt
+[1.563s] writing entry points to ../../build/drive/drive.egg-info/entry_points.txt
+[1.563s] writing requirements to ../../build/drive/drive.egg-info/requires.txt
+[1.564s] writing top-level names to ../../build/drive/drive.egg-info/top_level.txt
+[1.565s] reading manifest file '../../build/drive/drive.egg-info/SOURCES.txt'
+[1.566s] adding license file 'LICENSE'
+[1.566s] writing manifest file '../../build/drive/drive.egg-info/SOURCES.txt'
+[1.568s] running build
+[1.568s] running build_py
+[1.569s] copying drive/coordinates.py -> /home/jestin/SegFaultExp/A3/pathfinder/build/drive/build/lib/drive
+[1.569s] running install
+[1.569s] running install_lib
+[1.570s] copying /home/jestin/SegFaultExp/A3/pathfinder/build/drive/build/lib/drive/coordinates.py -> /home/jestin/SegFaultExp/A3/pathfinder/install/drive/lib/python3.10/site-packages/drive
+[1.570s] byte-compiling /home/jestin/SegFaultExp/A3/pathfinder/install/drive/lib/python3.10/site-packages/drive/coordinates.py to coordinates.cpython-310.pyc
+[1.572s] running install_egg_info
+[1.573s] removing '/home/jestin/SegFaultExp/A3/pathfinder/install/drive/lib/python3.10/site-packages/drive-0.0.0-py3.10.egg-info' (and everything under it)
+[1.574s] Copying ../../build/drive/drive.egg-info to /home/jestin/SegFaultExp/A3/pathfinder/install/drive/lib/python3.10/site-packages/drive-0.0.0-py3.10.egg-info
+[1.575s] running install_scripts
+[1.595s] Installing CoordinateFinder script to /home/jestin/SegFaultExp/A3/pathfinder/install/drive/lib/drive
+[1.595s] Installing driver script to /home/jestin/SegFaultExp/A3/pathfinder/install/drive/lib/drive
+[1.595s] writing list of installed files to '/home/jestin/SegFaultExp/A3/pathfinder/build/drive/install.log'
+[1.631s] Invoked command in '/home/jestin/SegFaultExp/A3/pathfinder/src/drive' returned '0': PYTHONPATH=/home/jestin/SegFaultExp/A3/pathfinder/build/drive/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jestin/SegFaultExp/A3/pathfinder/install/drive/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/drive build --build-base /home/jestin/SegFaultExp/A3/pathfinder/build/drive/build install --record /home/jestin/SegFaultExp/A3/pathfinder/build/drive/install.log --single-version-externally-managed

@@ -1,0 +1,16 @@
+[0.000000] (-) TimerEvent: {}
+[0.000118] (drive) JobQueued: {'identifier': 'drive', 'dependencies': OrderedDict()}
+[0.000144] (pedestrian) JobQueued: {'identifier': 'pedestrian', 'dependencies': OrderedDict()}
+[0.000164] (testing) JobQueued: {'identifier': 'testing', 'dependencies': OrderedDict()}
+[0.000181] (drive) JobStarted: {'identifier': 'drive'}
+[0.007530] (pedestrian) JobStarted: {'identifier': 'pedestrian'}
+[0.014109] (testing) JobStarted: {'identifier': 'testing'}
+[0.099339] (-) TimerEvent: {}
+[0.199609] (-) TimerEvent: {}
+[0.299888] (-) TimerEvent: {}
+[0.400348] (-) TimerEvent: {}
+[0.500619] (-) TimerEvent: {}
+[0.560681] (pedestrian) JobEnded: {'identifier': 'pedestrian', 'rc': 0}
+[0.561695] (drive) JobEnded: {'identifier': 'drive', 'rc': 'SIGINT'}
+[0.561948] (testing) JobEnded: {'identifier': 'testing', 'rc': 'SIGINT'}
+[0.572218] (-) EventReactorShutdown: {}
