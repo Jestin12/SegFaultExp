@@ -1,0 +1,34 @@
+[1.267s] Invoking command in '/home/jestin/SegFaultExp/A3/pathfinder/src/drive': PYTHONPATH=/home/jestin/SegFaultExp/A3/pathfinder/build/drive/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jestin/SegFaultExp/A3/pathfinder/install/drive/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/drive build --build-base /home/jestin/SegFaultExp/A3/pathfinder/build/drive/build install --record /home/jestin/SegFaultExp/A3/pathfinder/build/drive/install.log --single-version-externally-managed
+[1.530s] running egg_info
+[1.530s] creating ../../build/drive/drive.egg-info
+[1.531s] writing ../../build/drive/drive.egg-info/PKG-INFO
+[1.531s] writing dependency_links to ../../build/drive/drive.egg-info/dependency_links.txt
+[1.531s] writing entry points to ../../build/drive/drive.egg-info/entry_points.txt
+[1.531s] writing requirements to ../../build/drive/drive.egg-info/requires.txt
+[1.532s] writing top-level names to ../../build/drive/drive.egg-info/top_level.txt
+[1.532s] writing manifest file '../../build/drive/drive.egg-info/SOURCES.txt'
+[1.533s] reading manifest file '../../build/drive/drive.egg-info/SOURCES.txt'
+[1.533s] adding license file 'LICENSE'
+[1.534s] writing manifest file '../../build/drive/drive.egg-info/SOURCES.txt'
+[1.534s] running build
+[1.534s] running build_py
+[1.535s] creating /home/jestin/SegFaultExp/A3/pathfinder/build/drive/build
+[1.536s] creating /home/jestin/SegFaultExp/A3/pathfinder/build/drive/build/lib
+[1.536s] creating /home/jestin/SegFaultExp/A3/pathfinder/build/drive/build/lib/drive
+[1.536s] copying drive/__init__.py -> /home/jestin/SegFaultExp/A3/pathfinder/build/drive/build/lib/drive
+[1.536s] copying drive/driver.py -> /home/jestin/SegFaultExp/A3/pathfinder/build/drive/build/lib/drive
+[1.537s] copying drive/coordinates.py -> /home/jestin/SegFaultExp/A3/pathfinder/build/drive/build/lib/drive
+[1.537s] running install
+[1.537s] running install_lib
+[1.537s] copying /home/jestin/SegFaultExp/A3/pathfinder/build/drive/build/lib/drive/__init__.py -> /home/jestin/SegFaultExp/A3/pathfinder/install/drive/lib/python3.10/site-packages/drive
+[1.538s] copying /home/jestin/SegFaultExp/A3/pathfinder/build/drive/build/lib/drive/driver.py -> /home/jestin/SegFaultExp/A3/pathfinder/install/drive/lib/python3.10/site-packages/drive
+[1.538s] copying /home/jestin/SegFaultExp/A3/pathfinder/build/drive/build/lib/drive/coordinates.py -> /home/jestin/SegFaultExp/A3/pathfinder/install/drive/lib/python3.10/site-packages/drive
+[1.539s] byte-compiling /home/jestin/SegFaultExp/A3/pathfinder/install/drive/lib/python3.10/site-packages/drive/driver.py to driver.cpython-310.pyc
+[1.540s] byte-compiling /home/jestin/SegFaultExp/A3/pathfinder/install/drive/lib/python3.10/site-packages/drive/coordinates.py to coordinates.cpython-310.pyc
+[1.541s] running install_egg_info
+[1.542s] Copying ../../build/drive/drive.egg-info to /home/jestin/SegFaultExp/A3/pathfinder/install/drive/lib/python3.10/site-packages/drive-0.0.0-py3.10.egg-info
+[1.543s] running install_scripts
+[1.567s] Installing CoordinateFinder script to /home/jestin/SegFaultExp/A3/pathfinder/install/drive/lib/drive
+[1.567s] Installing driver script to /home/jestin/SegFaultExp/A3/pathfinder/install/drive/lib/drive
+[1.567s] writing list of installed files to '/home/jestin/SegFaultExp/A3/pathfinder/build/drive/install.log'
+[1.623s] Invoked command in '/home/jestin/SegFaultExp/A3/pathfinder/src/drive' returned '0': PYTHONPATH=/home/jestin/SegFaultExp/A3/pathfinder/build/drive/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jestin/SegFaultExp/A3/pathfinder/install/drive/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/drive build --build-base /home/jestin/SegFaultExp/A3/pathfinder/build/drive/build install --record /home/jestin/SegFaultExp/A3/pathfinder/build/drive/install.log --single-version-externally-managed

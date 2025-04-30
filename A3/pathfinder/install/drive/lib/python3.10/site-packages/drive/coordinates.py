@@ -33,7 +33,6 @@ class CoordinateFinder(Node):
 		# Subscriber to Camera coordinates 
 		self.SignSub = self.create_subscription(String, '/pedestrian/ModeSign', self.coordinate_callback, 10)
 
-		# Initialise tf transform listeners 
 		self.tf_buffer = tf2_ros.Buffer()
 		self.tf_listener = tf2_ros.TransformListener(self.tf_buffer, self)
 
@@ -82,6 +81,7 @@ class CoordinateFinder(Node):
 
 
 		# Transform from robot to Nav2 frame 
+
 		map_frame = 'map'
 		lidar_frame = 'base_link'
 
