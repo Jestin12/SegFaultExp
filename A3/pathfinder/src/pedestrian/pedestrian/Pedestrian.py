@@ -148,22 +148,23 @@ class Pedestrian(Node):
 
         if Mode != self.CurrOutput:
 
-            new_msg = String()
-            new_msg.data = "responding"
-
             match Mode:
                 case 'Stop':
-                    new_msg.data = new_msg.data + " Stop " + " ".join(str(item) for item in self.RecentStopXY)
+                    
+                    new_msg = String()
+                    new_msg.data = " Stop " + " ".join(str(item) for item in self.RecentStopXY)
                     self.CurrOutput = Mode
                     self.AvgPub.publish(new_msg)
 
                 case 'Turn right':
-                    new_msg.data = new_msg.data + " TurnRight " + " ".join(str(item) for item in self.RecentRightXY)
+                    new_msg = String()
+                    new_msg.data = " TurnRight " + " ".join(str(item) for item in self.RecentRightXY)
                     self.CurrOutput = Mode
                     self.AvgPub.publish(new_msg)
 
                 case 'Turn left':
-                    new_msg.data = new_msg.data + " TurnLeft " + " ".join(str(item) for item in self.RecentLeftXY)
+                    new_msg = String()
+                    new_msg.data = " TurnLeft " + " ".join(str(item) for item in self.RecentLeftXY)
                     self.CurrOutput = Mode
                     self.AvgPub.publish(new_msg)
 
