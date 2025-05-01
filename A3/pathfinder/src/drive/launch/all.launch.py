@@ -8,6 +8,13 @@ def generate_launch_description():
     # Get the paths to the packages
     drive_dir = get_package_share_directory('drive')
     pedestrian_dir = get_package_share_directory('pedestrian')
+    nav2 = get_package_share_directory('navigation2')
+
+    nav2_launch = IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            os.path.join(nav2, 'launch', 'navigation2.launch.py')
+        )
+    )
 
     # Include the first launch file from package_a
     driver_launch = IncludeLaunchDescription(
@@ -24,7 +31,7 @@ def generate_launch_description():
     )
 
     delayed_pedestrian_launch = TimerAction(
-        period=15.0,  # Delay in seconds (e.g., 5 seconds)
+        period=40.0,  # Delay in seconds (e.g., 5 seconds)
         actions=[pedestrian_launch]
     )
 

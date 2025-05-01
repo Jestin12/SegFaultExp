@@ -51,6 +51,7 @@ class Pedestrian(Node):
         # self.i = 0
         self.ImgSub = self.create_subscription(CompressedImage, '/camera/image_raw/compressed', self.ImgSub_callback, 10)
         self.processed_img_pub = self.create_publisher(CompressedImage, 'processed_image/compressed', 10)
+        self.ResetSub = self.create_subscription(String, '/pedestrian/reset', self.Reset_callback, 10)
 
         ############ Pedestrian stuff ######################################
 
@@ -99,6 +100,9 @@ class Pedestrian(Node):
         # # Initialize the window once
         # cv2.namedWindow('Compressed Image', cv2.WINDOW_NORMAL)
         # cv2.moveWindow('Compressed Image', 0, 0)  # Set initial position
+
+    def Reset_callback(self, msg):
+        self.CurrOutput = "reset"
 
 
     def ImgSub_callback(self, msg):
@@ -157,7 +161,7 @@ class Pedestrian(Node):
                 self.RecentLeftXY = [data1[1], data1[2]]
 
 
-        if (len(self.SignRecord) <= 50):
+        if (len(self.SignRecord) <= 25):
             self.SignRecord.append(data1[0])
 
         else:
