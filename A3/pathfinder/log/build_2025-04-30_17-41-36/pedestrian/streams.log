@@ -1,0 +1,44 @@
+[0.451s] Invoking command in '/home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/src/pedestrian': CONDA_PROMPT_MODIFIER=(base) PYTHONPATH=/home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/build/pedestrian/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/pedestrian build --build-base /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/build/pedestrian/build install --record /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/build/pedestrian/install.log --single-version-externally-managed install_data
+[0.625s] running egg_info
+[0.626s] creating ../../build/pedestrian/pedestrian.egg-info
+[0.626s] writing ../../build/pedestrian/pedestrian.egg-info/PKG-INFO
+[0.626s] writing dependency_links to ../../build/pedestrian/pedestrian.egg-info/dependency_links.txt
+[0.626s] writing entry points to ../../build/pedestrian/pedestrian.egg-info/entry_points.txt
+[0.626s] writing requirements to ../../build/pedestrian/pedestrian.egg-info/requires.txt
+[0.626s] writing top-level names to ../../build/pedestrian/pedestrian.egg-info/top_level.txt
+[0.626s] writing manifest file '../../build/pedestrian/pedestrian.egg-info/SOURCES.txt'
+[0.627s] reading manifest file '../../build/pedestrian/pedestrian.egg-info/SOURCES.txt'
+[0.627s] adding license file 'LICENSE'
+[0.627s] writing manifest file '../../build/pedestrian/pedestrian.egg-info/SOURCES.txt'
+[0.628s] running build
+[0.628s] running build_py
+[0.628s] creating /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/build/pedestrian/build
+[0.628s] creating /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/build/pedestrian/build/lib
+[0.628s] creating /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/build/pedestrian/build/lib/pedestrian
+[0.628s] copying pedestrian/__init__.py -> /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/build/pedestrian/build/lib/pedestrian
+[0.628s] copying pedestrian/Pedestrian.py -> /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/build/pedestrian/build/lib/pedestrian
+[0.628s] copying pedestrian/network.py -> /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/build/pedestrian/build/lib/pedestrian
+[0.628s] running install
+[0.629s] running install_lib
+[0.629s] creating /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages/pedestrian
+[0.629s] copying /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/build/pedestrian/build/lib/pedestrian/__init__.py -> /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages/pedestrian
+[0.629s] copying /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/build/pedestrian/build/lib/pedestrian/Pedestrian.py -> /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages/pedestrian
+[0.629s] copying /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/build/pedestrian/build/lib/pedestrian/network.py -> /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages/pedestrian
+[0.629s] byte-compiling /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages/pedestrian/__init__.py to __init__.cpython-310.pyc
+[0.629s] byte-compiling /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages/pedestrian/Pedestrian.py to Pedestrian.cpython-310.pyc
+[0.631s] byte-compiling /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages/pedestrian/network.py to network.cpython-310.pyc
+[0.631s] running install_data
+[0.631s] creating /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/install/pedestrian/share/ament_index
+[0.631s] creating /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/install/pedestrian/share/ament_index/resource_index
+[0.631s] creating /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/install/pedestrian/share/ament_index/resource_index/packages
+[0.631s] copying resource/pedestrian -> /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/install/pedestrian/share/ament_index/resource_index/packages
+[0.631s] copying package.xml -> /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/install/pedestrian/share/pedestrian
+[0.631s] creating /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/install/pedestrian/share/pedestrian/launch
+[0.632s] copying launch/pedestrian.launch.py -> /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/install/pedestrian/share/pedestrian/launch
+[0.632s] creating /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/install/pedestrian/share/pedestrian/Models
+[0.632s] running install_egg_info
+[0.632s] Copying ../../build/pedestrian/pedestrian.egg-info to /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages/pedestrian-0.0.0-py3.10.egg-info
+[0.633s] running install_scripts
+[0.646s] Installing Pedestrian script to /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/install/pedestrian/lib/pedestrian
+[0.646s] writing list of installed files to '/home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/build/pedestrian/install.log'
+[0.663s] Invoked command in '/home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/src/pedestrian' returned '0': CONDA_PROMPT_MODIFIER=(base) PYTHONPATH=/home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/build/pedestrian/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/pedestrian build --build-base /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/build/pedestrian/build install --record /home/neel/Documents/MTRX5700/SegFaultExp/A3/pathfinder/build/pedestrian/install.log --single-version-externally-managed install_data
