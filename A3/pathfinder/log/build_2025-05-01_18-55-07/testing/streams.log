@@ -1,0 +1,49 @@
+[1.034s] Invoking command in '/home/jestin/SegFaultExp/A3/pathfinder/src/testing': PYTHONPATH=/home/jestin/SegFaultExp/A3/pathfinder/build/testing/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/testing build --build-base /home/jestin/SegFaultExp/A3/pathfinder/build/testing/build install --record /home/jestin/SegFaultExp/A3/pathfinder/build/testing/install.log --single-version-externally-managed install_data
+[1.265s] running egg_info
+[1.265s] creating ../../build/testing/testing.egg-info
+[1.266s] writing ../../build/testing/testing.egg-info/PKG-INFO
+[1.266s] writing dependency_links to ../../build/testing/testing.egg-info/dependency_links.txt
+[1.266s] writing entry points to ../../build/testing/testing.egg-info/entry_points.txt
+[1.266s] writing requirements to ../../build/testing/testing.egg-info/requires.txt
+[1.266s] writing top-level names to ../../build/testing/testing.egg-info/top_level.txt
+[1.266s] writing manifest file '../../build/testing/testing.egg-info/SOURCES.txt'
+[1.268s] reading manifest file '../../build/testing/testing.egg-info/SOURCES.txt'
+[1.269s] writing manifest file '../../build/testing/testing.egg-info/SOURCES.txt'
+[1.269s] running build
+[1.269s] running build_py
+[1.269s] creating /home/jestin/SegFaultExp/A3/pathfinder/build/testing/build
+[1.269s] creating /home/jestin/SegFaultExp/A3/pathfinder/build/testing/build/lib
+[1.269s] creating /home/jestin/SegFaultExp/A3/pathfinder/build/testing/build/lib/testing
+[1.269s] copying testing/__init__.py -> /home/jestin/SegFaultExp/A3/pathfinder/build/testing/build/lib/testing
+[1.269s] copying testing/ManualModeSignPublisher.py -> /home/jestin/SegFaultExp/A3/pathfinder/build/testing/build/lib/testing
+[1.269s] copying testing/ScanSubscriber.py -> /home/jestin/SegFaultExp/A3/pathfinder/build/testing/build/lib/testing
+[1.269s] copying testing/keyboard.py -> /home/jestin/SegFaultExp/A3/pathfinder/build/testing/build/lib/testing
+[1.270s] copying testing/CmdVelPublisher.py -> /home/jestin/SegFaultExp/A3/pathfinder/build/testing/build/lib/testing
+[1.270s] running install
+[1.270s] running install_lib
+[1.271s] creating /home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/python3.10/site-packages/testing
+[1.272s] copying /home/jestin/SegFaultExp/A3/pathfinder/build/testing/build/lib/testing/__init__.py -> /home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/python3.10/site-packages/testing
+[1.272s] copying /home/jestin/SegFaultExp/A3/pathfinder/build/testing/build/lib/testing/ManualModeSignPublisher.py -> /home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/python3.10/site-packages/testing
+[1.272s] copying /home/jestin/SegFaultExp/A3/pathfinder/build/testing/build/lib/testing/ScanSubscriber.py -> /home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/python3.10/site-packages/testing
+[1.272s] copying /home/jestin/SegFaultExp/A3/pathfinder/build/testing/build/lib/testing/keyboard.py -> /home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/python3.10/site-packages/testing
+[1.272s] copying /home/jestin/SegFaultExp/A3/pathfinder/build/testing/build/lib/testing/CmdVelPublisher.py -> /home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/python3.10/site-packages/testing
+[1.273s] byte-compiling /home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/python3.10/site-packages/testing/__init__.py to __init__.cpython-310.pyc
+[1.273s] byte-compiling /home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/python3.10/site-packages/testing/ManualModeSignPublisher.py to ManualModeSignPublisher.cpython-310.pyc
+[1.273s] byte-compiling /home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/python3.10/site-packages/testing/ScanSubscriber.py to ScanSubscriber.cpython-310.pyc
+[1.273s] byte-compiling /home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/python3.10/site-packages/testing/keyboard.py to keyboard.cpython-310.pyc
+[1.274s] byte-compiling /home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/python3.10/site-packages/testing/CmdVelPublisher.py to CmdVelPublisher.cpython-310.pyc
+[1.275s] running install_data
+[1.275s] creating /home/jestin/SegFaultExp/A3/pathfinder/install/testing/share/ament_index
+[1.275s] creating /home/jestin/SegFaultExp/A3/pathfinder/install/testing/share/ament_index/resource_index
+[1.275s] creating /home/jestin/SegFaultExp/A3/pathfinder/install/testing/share/ament_index/resource_index/packages
+[1.276s] copying resource/testing -> /home/jestin/SegFaultExp/A3/pathfinder/install/testing/share/ament_index/resource_index/packages
+[1.276s] copying package.xml -> /home/jestin/SegFaultExp/A3/pathfinder/install/testing/share/testing
+[1.276s] running install_egg_info
+[1.278s] Copying ../../build/testing/testing.egg-info to /home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/python3.10/site-packages/testing-0.0.0-py3.10.egg-info
+[1.278s] running install_scripts
+[1.296s] Installing CmdVelPublisher script to /home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/testing
+[1.296s] Installing ManualModeSignPublisher script to /home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/testing
+[1.296s] Installing ScanSubscriber script to /home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/testing
+[1.296s] Installing keyboard script to /home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/testing
+[1.297s] writing list of installed files to '/home/jestin/SegFaultExp/A3/pathfinder/build/testing/install.log'
+[1.324s] Invoked command in '/home/jestin/SegFaultExp/A3/pathfinder/src/testing' returned '0': PYTHONPATH=/home/jestin/SegFaultExp/A3/pathfinder/build/testing/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/testing build --build-base /home/jestin/SegFaultExp/A3/pathfinder/build/testing/build install --record /home/jestin/SegFaultExp/A3/pathfinder/build/testing/install.log --single-version-externally-managed install_data

@@ -1,0 +1,45 @@
+[1.040s] Invoking command in '/home/jestin/SegFaultExp/A3/pathfinder/src/pedestrian': PYTHONPATH=/home/jestin/SegFaultExp/A3/pathfinder/build/pedestrian/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/pedestrian build --build-base /home/jestin/SegFaultExp/A3/pathfinder/build/pedestrian/build install --record /home/jestin/SegFaultExp/A3/pathfinder/build/pedestrian/install.log --single-version-externally-managed install_data
+[1.274s] running egg_info
+[1.275s] creating ../../build/pedestrian/pedestrian.egg-info
+[1.275s] writing ../../build/pedestrian/pedestrian.egg-info/PKG-INFO
+[1.275s] writing dependency_links to ../../build/pedestrian/pedestrian.egg-info/dependency_links.txt
+[1.276s] writing entry points to ../../build/pedestrian/pedestrian.egg-info/entry_points.txt
+[1.276s] writing requirements to ../../build/pedestrian/pedestrian.egg-info/requires.txt
+[1.276s] writing top-level names to ../../build/pedestrian/pedestrian.egg-info/top_level.txt
+[1.277s] writing manifest file '../../build/pedestrian/pedestrian.egg-info/SOURCES.txt'
+[1.278s] reading manifest file '../../build/pedestrian/pedestrian.egg-info/SOURCES.txt'
+[1.278s] adding license file 'LICENSE'
+[1.279s] writing manifest file '../../build/pedestrian/pedestrian.egg-info/SOURCES.txt'
+[1.279s] running build
+[1.279s] running build_py
+[1.280s] creating /home/jestin/SegFaultExp/A3/pathfinder/build/pedestrian/build
+[1.280s] creating /home/jestin/SegFaultExp/A3/pathfinder/build/pedestrian/build/lib
+[1.280s] creating /home/jestin/SegFaultExp/A3/pathfinder/build/pedestrian/build/lib/pedestrian
+[1.280s] copying pedestrian/__init__.py -> /home/jestin/SegFaultExp/A3/pathfinder/build/pedestrian/build/lib/pedestrian
+[1.280s] copying pedestrian/network.py -> /home/jestin/SegFaultExp/A3/pathfinder/build/pedestrian/build/lib/pedestrian
+[1.280s] copying pedestrian/Pedestrian.py -> /home/jestin/SegFaultExp/A3/pathfinder/build/pedestrian/build/lib/pedestrian
+[1.281s] running install
+[1.281s] running install_lib
+[1.281s] creating /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages/pedestrian
+[1.282s] copying /home/jestin/SegFaultExp/A3/pathfinder/build/pedestrian/build/lib/pedestrian/__init__.py -> /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages/pedestrian
+[1.282s] copying /home/jestin/SegFaultExp/A3/pathfinder/build/pedestrian/build/lib/pedestrian/network.py -> /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages/pedestrian
+[1.282s] copying /home/jestin/SegFaultExp/A3/pathfinder/build/pedestrian/build/lib/pedestrian/Pedestrian.py -> /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages/pedestrian
+[1.282s] byte-compiling /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages/pedestrian/__init__.py to __init__.cpython-310.pyc
+[1.282s] byte-compiling /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages/pedestrian/network.py to network.cpython-310.pyc
+[1.282s] byte-compiling /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages/pedestrian/Pedestrian.py to Pedestrian.cpython-310.pyc
+[1.284s] running install_data
+[1.284s] creating /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/share/ament_index
+[1.284s] creating /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/share/ament_index/resource_index
+[1.284s] creating /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/share/ament_index/resource_index/packages
+[1.284s] copying resource/pedestrian -> /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/share/ament_index/resource_index/packages
+[1.284s] copying package.xml -> /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/share/pedestrian
+[1.285s] creating /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/share/pedestrian/launch
+[1.285s] copying launch/pedestrian.launch.py -> /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/share/pedestrian/launch
+[1.285s] creating /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/share/pedestrian/Models
+[1.285s] copying Models/best_model_final.pth -> /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/share/pedestrian/Models
+[1.717s] running install_egg_info
+[1.722s] Copying ../../build/pedestrian/pedestrian.egg-info to /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages/pedestrian-0.0.0-py3.10.egg-info
+[1.723s] running install_scripts
+[1.756s] Installing Pedestrian script to /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/lib/pedestrian
+[1.757s] writing list of installed files to '/home/jestin/SegFaultExp/A3/pathfinder/build/pedestrian/install.log'
+[1.777s] Invoked command in '/home/jestin/SegFaultExp/A3/pathfinder/src/pedestrian' returned '0': PYTHONPATH=/home/jestin/SegFaultExp/A3/pathfinder/build/pedestrian/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/pedestrian build --build-base /home/jestin/SegFaultExp/A3/pathfinder/build/pedestrian/build install --record /home/jestin/SegFaultExp/A3/pathfinder/build/pedestrian/install.log --single-version-externally-managed install_data

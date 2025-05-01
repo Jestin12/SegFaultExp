@@ -110,6 +110,7 @@ class Pedestrian(Node):
         # self.get_logger().info('Image Received')
 
         ImgArray = np.frombuffer(msg.data, np.uint8)
+
         Image = cv2.imdecode(ImgArray, cv2.IMREAD_COLOR)
 
         flipped_image = cv2.flip(Image, -1)
@@ -252,19 +253,23 @@ class Pedestrian(Node):
 
         for cnt in contours:
             area = cv2.contourArea(cnt)
-            if 1000 < area < 10000:
+            if 700 < area < 7000:                    
                 x, y, w, h = cv2.boundingRect(cnt)
-                # Map box back to full resolution coordinates
-                bx = int(x * scale_x)
-                by = int(y * scale_y)
-                bw = int(w * scale_x)
-                bh = int(h * scale_y)
-                scaled_boxes.append((bx, by, bw, bh))
+                aspect_ratio = w/float(h)
+                self.get_logger().info(f'Aspect Ratio: {aspect_ratio}')
 
-                # Keep last crop for classification
-                cropped_sign = image[y:y+h, x:x+w]
-                center_x = bx + bw // 2
-                center_y = by + bh // 2
+                if 0.8 <= aspect_ratio <= 1.2:
+                    # Map box back to full resolution coordinates
+                    bx = int(x * scale_x)
+                    by = int(y * scale_y)
+                    bw = int(w * scale_x)
+                    bh = int(h * scale_y)
+                    scaled_boxes.append((bx, by, bw, bh))
+
+                    # Keep last crop for classification
+                    cropped_sign = image[y:y+h, x:x+w]
+                    center_x = bx + bw // 2
+                    center_y = by + bh // 2
 
         return cropped_sign, center_x, center_y, scaled_boxes
 

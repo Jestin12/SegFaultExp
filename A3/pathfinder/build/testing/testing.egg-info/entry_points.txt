@@ -1,0 +1,6 @@
+[console_scripts]
+CmdVelPublisher = testing.CmdVelPublisher:main
+ManualModeSignPublisher = testing.ManualModeSignPublisher:main
+ScanSubscriber = testing.ScanSubscriber:main
+keyboard = testing.keyboard:main
+

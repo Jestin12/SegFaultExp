@@ -1,0 +1,24 @@
+[1.125s] Invoking command in '/home/jestin/SegFaultExp/A3/pathfinder/src/testing': PYTHONPATH=/home/jestin/SegFaultExp/A3/pathfinder/build/testing/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/testing build --build-base /home/jestin/SegFaultExp/A3/pathfinder/build/testing/build install --record /home/jestin/SegFaultExp/A3/pathfinder/build/testing/install.log --single-version-externally-managed install_data
+[1.390s] running egg_info
+[1.391s] writing ../../build/testing/testing.egg-info/PKG-INFO
+[1.391s] writing dependency_links to ../../build/testing/testing.egg-info/dependency_links.txt
+[1.392s] writing entry points to ../../build/testing/testing.egg-info/entry_points.txt
+[1.392s] writing requirements to ../../build/testing/testing.egg-info/requires.txt
+[1.392s] writing top-level names to ../../build/testing/testing.egg-info/top_level.txt
+[1.395s] reading manifest file '../../build/testing/testing.egg-info/SOURCES.txt'
+[1.396s] writing manifest file '../../build/testing/testing.egg-info/SOURCES.txt'
+[1.396s] running build
+[1.396s] running build_py
+[1.397s] running install
+[1.397s] running install_lib
+[1.399s] running install_data
+[1.399s] running install_egg_info
+[1.402s] removing '/home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/python3.10/site-packages/testing-0.0.0-py3.10.egg-info' (and everything under it)
+[1.402s] Copying ../../build/testing/testing.egg-info to /home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/python3.10/site-packages/testing-0.0.0-py3.10.egg-info
+[1.403s] running install_scripts
+[1.427s] Installing CmdVelPublisher script to /home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/testing
+[1.427s] Installing ManualModeSignPublisher script to /home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/testing
+[1.427s] Installing ScanSubscriber script to /home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/testing
+[1.428s] Installing keyboard script to /home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/testing
+[1.428s] writing list of installed files to '/home/jestin/SegFaultExp/A3/pathfinder/build/testing/install.log'
+[1.469s] Invoked command in '/home/jestin/SegFaultExp/A3/pathfinder/src/testing' returned '0': PYTHONPATH=/home/jestin/SegFaultExp/A3/pathfinder/build/testing/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jestin/SegFaultExp/A3/pathfinder/install/testing/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/testing build --build-base /home/jestin/SegFaultExp/A3/pathfinder/build/testing/build install --record /home/jestin/SegFaultExp/A3/pathfinder/build/testing/install.log --single-version-externally-managed install_data

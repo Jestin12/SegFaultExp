@@ -1,0 +1,23 @@
+running egg_info
+writing ../../build/pedestrian/pedestrian.egg-info/PKG-INFO
+writing dependency_links to ../../build/pedestrian/pedestrian.egg-info/dependency_links.txt
+writing entry points to ../../build/pedestrian/pedestrian.egg-info/entry_points.txt
+writing requirements to ../../build/pedestrian/pedestrian.egg-info/requires.txt
+writing top-level names to ../../build/pedestrian/pedestrian.egg-info/top_level.txt
+reading manifest file '../../build/pedestrian/pedestrian.egg-info/SOURCES.txt'
+adding license file 'LICENSE'
+writing manifest file '../../build/pedestrian/pedestrian.egg-info/SOURCES.txt'
+running build
+running build_py
+copying pedestrian/Pedestrian.py -> /home/jestin/SegFaultExp/A3/pathfinder/build/pedestrian/build/lib/pedestrian
+running install
+running install_lib
+copying /home/jestin/SegFaultExp/A3/pathfinder/build/pedestrian/build/lib/pedestrian/Pedestrian.py -> /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages/pedestrian
+byte-compiling /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages/pedestrian/Pedestrian.py to Pedestrian.cpython-310.pyc
+running install_data
+running install_egg_info
+removing '/home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages/pedestrian-0.0.0-py3.10.egg-info' (and everything under it)
+Copying ../../build/pedestrian/pedestrian.egg-info to /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/lib/python3.10/site-packages/pedestrian-0.0.0-py3.10.egg-info
+running install_scripts
+Installing Pedestrian script to /home/jestin/SegFaultExp/A3/pathfinder/install/pedestrian/lib/pedestrian
+writing list of installed files to '/home/jestin/SegFaultExp/A3/pathfinder/build/pedestrian/install.log'
