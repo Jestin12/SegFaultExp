@@ -21,6 +21,7 @@ setup(
     entry_points={
         'console_scripts': [
             'keyboard = testing.keyboard:main',
+            'ScanSubscriber = testing.ScanSubscriber:main'
         ],
     },
 )

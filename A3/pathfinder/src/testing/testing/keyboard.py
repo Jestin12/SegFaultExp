@@ -3,10 +3,12 @@
 import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
+from sensor_msgs.msg import LaserScan
 import termios
 import tty
 import sys
 import threading
+from rclpy.qos import QoSProfile, ReliabilityPolicy, HistoryPolicy
 
 class KeyboardPublisherNode(Node):
     def __init__(self):
@@ -15,7 +17,7 @@ class KeyboardPublisherNode(Node):
         # Create a publisher with the topic name 'keyboard_input'
         # Using String message type
         self.publisher = self.create_publisher(String, 'keyboard_input', 10)
-        
+
         self.get_logger().info('Keyboard Publisher started. Press keys to publish, ESC or Ctrl+C to exit.')
         
         # Start a thread for keyboard input
@@ -24,6 +26,8 @@ class KeyboardPublisherNode(Node):
         self.input_thread.daemon = True
         self.input_thread.start()
     
+ 
+
     def get_key(self):
         """Get a single keypress from the user."""
         fd = sys.stdin.fileno()

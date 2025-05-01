@@ -8,3 +8,6 @@ ssh ubuntu@192.168.248.9
 #for nav2 to put in .bashrc
 export RMW_IMPLEMENTATION=rmw_cyclonedds_cpp
 
+
+#launching nav2
+ros2 launch turtlebot3_navigation2 navigation2.launch.py use_sim_time:=False slam:=True

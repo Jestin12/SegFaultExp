@@ -80,7 +80,7 @@ class Driver(Node):
             self.get_logger().info('Waiting for Nav2 to finish')
 
             if (self.CamCordinate != None):
-                c
+                
 
         elif (self.Nav2Flag == 2):
             self.get_logger().info(f'Waiting for Pedestrian to find a sign {self.Nav2Flag}')
