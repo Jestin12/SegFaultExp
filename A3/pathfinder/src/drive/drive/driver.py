@@ -22,6 +22,7 @@ class Driver(Node):
         self.MovePub = self.create_publisher(Twist, '/cmd_vel', 10)
         self.GoalPosePub = self.create_publisher(PoseStamped, '/goal_pose', 10)  # Fixed: Publisher, not subscription
         self.ResetPub = self.create_publisher(String, '/reset', 10)     #Sends a reset signal
+        self.SignPub2 = self.create_publisher(String, '/pedestrian/ModeSign2', 10)
 
         # Subscriptions
         self.SignSub = self.create_subscription(String, '/pedestrian/ModeSign', self.SignSub_Callback, 10)
@@ -133,10 +134,12 @@ class Driver(Node):
         # Uncomment if needed: self.Nav2Flag = 1
 
     def SignSub_Callback(self, msg):
-        self.Action = msg.data.split(' ')[1]
-        self.get_logger().info(f'ModeSign Received, action: {self.Action}')
-        if self.Nav2Flag == 2:
-            self.Nav2Flag = 0
+        if self.Nav2Flag != 0:
+            self.SignPub2.publish(msg)
+            self.Action = msg.data.split(' ')[1]
+            self.get_logger().info(f'ModeSign Received, action: {self.Action}')
+            if self.Nav2Flag == 2:
+                self.Nav2Flag = 0
 
     def CmdVel_Callback(self, msg):
         self.RecentCmdVel = msg.linear.x

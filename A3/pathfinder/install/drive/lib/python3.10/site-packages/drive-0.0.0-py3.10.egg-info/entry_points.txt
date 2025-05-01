@@ -1,4 +1,0 @@
-[console_scripts]
-coordinates = drive.coordinates:main
-driver = drive.driver:main
-
