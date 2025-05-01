@@ -101,7 +101,7 @@ class Pedestrian(Node):
 
     def ImgSub_callback(self, msg):
 
-        self.get_logger().info('Image Received')
+        # self.get_logger().info('Image Received')
 
         ImgArray = np.frombuffer(msg.data, np.uint8)
         Image = cv2.imdecode(ImgArray, cv2.IMREAD_COLOR)

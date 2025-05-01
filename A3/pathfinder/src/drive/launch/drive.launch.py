@@ -9,5 +9,11 @@ def generate_launch_description():
             namespace='driver',
             executable='driver',
             name='driver'
+        ),
+        Node(
+            package='drive',
+            namespace='coordinates',
+            executable='coordinates',
+            name='CoordinatesFinder'
         )
     ])
