@@ -258,7 +258,7 @@ class Pedestrian(Node):
                 aspect_ratio = w/float(h)
                 self.get_logger().info(f'Aspect Ratio: {aspect_ratio}')
 
-                if 0.8 <= aspect_ratio <= 1.2:
+                if 0.7 <= aspect_ratio <= 1.35:
                     # Map box back to full resolution coordinates
                     bx = int(x * scale_x)
                     by = int(y * scale_y)
