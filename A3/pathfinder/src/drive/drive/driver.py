@@ -68,6 +68,7 @@ class Driver(Node):
                     
                     self.GoalPosePub.publish(goal_pose)
 
+                    self.Nav2Flag = 0
 
                     # self.Nav2Flag = 3  # Reset to waiting for sign (or define Nav2Flag == 3 behavior)
 
@@ -75,20 +76,22 @@ class Driver(Node):
                     self.get_logger().info('Turning Right')
                     self.rotate_90_degrees('right')
                     self.Action = None
+                    self.Nav2Flag = 2
 
                 case 'TurnLeft':
                     self.get_logger().info('Turning Left')
                     self.rotate_90_degrees('left')
                     self.Action = None
+                    self.Nav2Flag = 2
 
                 case None:
                     self.get_logger().info('Action not given')
                     self.stop()
+                    self.Nav2Flag = 2
 
                 case _:
                     self.get_logger().info('Unknown behaviour: Action value invalid')
 
-            self.Nav2Flag = 2
             self.Action = None
 
             msg = String()

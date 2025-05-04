@@ -103,6 +103,7 @@ class Pedestrian(Node):
 
     def Reset_callback(self, msg):
         self.CurrOutput = "reset"
+        self.SignRecord = []
 
 
     def ImgSub_callback(self, msg):
