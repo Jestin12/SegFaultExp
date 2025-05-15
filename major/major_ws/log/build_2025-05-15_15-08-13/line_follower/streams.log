@@ -1,0 +1,38 @@
+[0.721s] Invoking command in '/home/jestin/SegFaultExp/major/major_ws/src/line_follower': PYTHONPATH=/home/jestin/SegFaultExp/major/major_ws/build/line_follower/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jestin/SegFaultExp/major/major_ws/install/line_follower/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/line_follower build --build-base /home/jestin/SegFaultExp/major/major_ws/build/line_follower/build install --record /home/jestin/SegFaultExp/major/major_ws/build/line_follower/install.log --single-version-externally-managed install_data
+[0.975s] running egg_info
+[0.975s] creating ../../build/line_follower/line_follower.egg-info
+[0.975s] writing ../../build/line_follower/line_follower.egg-info/PKG-INFO
+[0.975s] writing dependency_links to ../../build/line_follower/line_follower.egg-info/dependency_links.txt
+[0.976s] writing entry points to ../../build/line_follower/line_follower.egg-info/entry_points.txt
+[0.976s] writing requirements to ../../build/line_follower/line_follower.egg-info/requires.txt
+[0.976s] writing top-level names to ../../build/line_follower/line_follower.egg-info/top_level.txt
+[0.976s] writing manifest file '../../build/line_follower/line_follower.egg-info/SOURCES.txt'
+[0.977s] reading manifest file '../../build/line_follower/line_follower.egg-info/SOURCES.txt'
+[0.978s] adding license file 'LICENSE'
+[0.978s] writing manifest file '../../build/line_follower/line_follower.egg-info/SOURCES.txt'
+[0.978s] running build
+[0.978s] running build_py
+[0.979s] creating /home/jestin/SegFaultExp/major/major_ws/build/line_follower/build
+[0.979s] creating /home/jestin/SegFaultExp/major/major_ws/build/line_follower/build/lib
+[0.979s] creating /home/jestin/SegFaultExp/major/major_ws/build/line_follower/build/lib/line_follower
+[0.979s] copying line_follower/__init__.py -> /home/jestin/SegFaultExp/major/major_ws/build/line_follower/build/lib/line_follower
+[0.979s] copying line_follower/follower.py -> /home/jestin/SegFaultExp/major/major_ws/build/line_follower/build/lib/line_follower
+[0.979s] running install
+[0.979s] running install_lib
+[0.980s] creating /home/jestin/SegFaultExp/major/major_ws/install/line_follower/lib/python3.10/site-packages/line_follower
+[0.980s] copying /home/jestin/SegFaultExp/major/major_ws/build/line_follower/build/lib/line_follower/__init__.py -> /home/jestin/SegFaultExp/major/major_ws/install/line_follower/lib/python3.10/site-packages/line_follower
+[0.980s] copying /home/jestin/SegFaultExp/major/major_ws/build/line_follower/build/lib/line_follower/follower.py -> /home/jestin/SegFaultExp/major/major_ws/install/line_follower/lib/python3.10/site-packages/line_follower
+[0.981s] byte-compiling /home/jestin/SegFaultExp/major/major_ws/install/line_follower/lib/python3.10/site-packages/line_follower/__init__.py to __init__.cpython-310.pyc
+[0.981s] byte-compiling /home/jestin/SegFaultExp/major/major_ws/install/line_follower/lib/python3.10/site-packages/line_follower/follower.py to follower.cpython-310.pyc
+[0.981s] running install_data
+[0.982s] creating /home/jestin/SegFaultExp/major/major_ws/install/line_follower/share/ament_index
+[0.982s] creating /home/jestin/SegFaultExp/major/major_ws/install/line_follower/share/ament_index/resource_index
+[0.982s] creating /home/jestin/SegFaultExp/major/major_ws/install/line_follower/share/ament_index/resource_index/packages
+[0.982s] copying resource/line_follower -> /home/jestin/SegFaultExp/major/major_ws/install/line_follower/share/ament_index/resource_index/packages
+[0.982s] copying package.xml -> /home/jestin/SegFaultExp/major/major_ws/install/line_follower/share/line_follower
+[0.982s] running install_egg_info
+[0.984s] Copying ../../build/line_follower/line_follower.egg-info to /home/jestin/SegFaultExp/major/major_ws/install/line_follower/lib/python3.10/site-packages/line_follower-0.0.0-py3.10.egg-info
+[0.985s] running install_scripts
+[1.004s] Installing follower script to /home/jestin/SegFaultExp/major/major_ws/install/line_follower/lib/line_follower
+[1.004s] writing list of installed files to '/home/jestin/SegFaultExp/major/major_ws/build/line_follower/install.log'
+[1.027s] Invoked command in '/home/jestin/SegFaultExp/major/major_ws/src/line_follower' returned '0': PYTHONPATH=/home/jestin/SegFaultExp/major/major_ws/build/line_follower/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/jestin/SegFaultExp/major/major_ws/install/line_follower/lib/python3.10/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated -W ignore:easy_install command is deprecated setup.py egg_info --egg-base ../../build/line_follower build --build-base /home/jestin/SegFaultExp/major/major_ws/build/line_follower/build install --record /home/jestin/SegFaultExp/major/major_ws/build/line_follower/install.log --single-version-externally-managed install_data
