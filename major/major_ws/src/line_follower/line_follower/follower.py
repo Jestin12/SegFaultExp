@@ -18,11 +18,20 @@ class Follower(Node):
 		GPIO.setmode(GPIO.BCM)
 		GPIO.setup([self.CENTRE, self.LEFT, self.RIGHT], GPIO.IN)
 
+
+		# Initialise variables 
+		self.detected = 0
+		self.arm_state = 0
+
 		# Create publishers 
 		self.vel_publisher = self.create_publisher(Twist, "/cmd_vel", 10)
 		self.IR_publisher = self.create_publisher(String, "/IR_value", 10)
 
 		self.timer = self.create_timer(0.05, self.check_sensors)
+
+		# Create subscribers 
+		self.detection_subscriber = self.create_subscription(String, "/image_detector", self.image_detector)
+		self.arm_subscriber = self.create_subscription(String, "/arm_process", self.arm_process)
 
 
 	def check_sensors(self): 
@@ -32,24 +41,65 @@ class Follower(Node):
 		centre_value = GPIO.input(self.CENTRE)
 		right_value = GPIO.input(self.RIGHT)
 
+		# Publish IR values 
+		ir_msg = String()
+		ir_msg.data = f"Left: {left_value}, Centre: {centre_value}, Right: {right_value}"
+		self.IR_publisher.publish(ir_msg)
 
 		vel_msg = Twist()
-		ir_msg = String()
 
-		if value == 0: 
 
-			vel_msg.linear.x = 0.5
-			vel_msg.angular.z = 0.0 
+		# Check if turtlebot is conducting detection or arm kinematics process 
+		if (self.detected and self.arm_state) == 0: 
+
+			# STRAIGHT
+			if left_value == 1 and centre_value == 1 and right_value == 1:
+				vel_msg.linear.x = 0.5
+				vel_msg.angular.z = 0.0 
+
+			# ROTATE RIGHT
+			elif left_value == 0 and centre_value == 1 and right_value == 1: 
+			
+				vel_msg.linear.x = 0.5
+				vel_msg.angular.z = 0.5
+
+			# ROTATE LEFT 
+			elif left_value == 1 and centre_value == 1 and right_value == 0: 
+
+				vel_msg.linear.x = 0.5
+				vel_msg.angular.z = -0.5
+			
+			# STOP
+			elif left_value == 0 and centre_value == 0 and right_value == 0: 
+				vel_msg.linear.x = 0.0
+				vel_msg.angular.z = 0.0 
+			
 
 		else: 
 			vel_msg.linear.x = 0.0
 			vel_msg.angular.z = 0.0 
 
 
-		ir_msg.data = str(value)
-
+		# Publish movement command
 		self.vel_publisher.publish(vel_msg)
-		self.IR_publisher.publish(ir_msg)
+
+
+	def image_detector(self): 
+		msg = String() 
+
+		if msg.data == "flag": 
+			self.detected = 1 
+		else: 
+			self.detected = 0
+
+	def arm_process(self): 
+		msg = String()
+
+		if msg.data == "Arm done process": 
+			self.arm_state = 0 
+		else: 
+			self.arm_state = 1
+	
 
 
 
