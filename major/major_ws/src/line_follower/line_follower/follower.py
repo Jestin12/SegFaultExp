@@ -11,10 +11,12 @@ class Follower(Node):
 		super().__init__("Follower")
 
 		# Set pin numbers for IR sensors 
+		self.LEFT = 16
 		self.CENTRE = 25
+		self.RIGHT = 26
 		
 		GPIO.setmode(GPIO.BCM)
-		GPIO.setup(self.CENTRE, GPIO.IN)
+		GPIO.setup([self.CENTRE, self.LEFT, self.RIGHT], GPIO.IN)
 
 		# Create publishers 
 		self.vel_publisher = self.create_publisher(Twist, "/cmd_vel", 10)
@@ -25,7 +27,11 @@ class Follower(Node):
 
 	def check_sensors(self): 
 
-		value = GPIO.input(self.CENTRE)
+		# Extracting the values from the GPIO pins 
+		left_value = GPIO.input(self.LEFT)
+		centre_value = GPIO.input(self.CENTRE)
+		right_value = GPIO.input(self.RIGHT)
+
 
 		vel_msg = Twist()
 		ir_msg = String()
