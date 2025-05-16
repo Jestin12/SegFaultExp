@@ -1,4 +1,35 @@
-__pycache__/
-*.pth
-*.p
-*.db3
+# ROS 2 build artifacts
+build/
+install/
+log/
+
+# Colcon cache
+.colcon/
+
+# Python cache
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+
+# CMake files
+CMakeFiles/
+CMakeCache.txt
+cmake_install.cmake
+Makefile
+
+# VSCode settings (optional)
+.vscode/
+
+# JetBrains IDEs
+.idea/
+
+# ROS 2 launch logs (optional)
+*.launch.log
+
+# Backup files
+*~
+*.swp
+*.swo
+
+# Environment files
+.env
