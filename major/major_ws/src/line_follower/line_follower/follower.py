@@ -53,24 +53,24 @@ class Follower(Node):
 		if (self.detected and self.arm_state) == 0: 
 
 			# STRAIGHT
-			if left_value == 1 and centre_value == 1 and right_value == 1:
+			if left_value == 0 and centre_value == 0 and right_value == 0:
 				vel_msg.linear.x = 0.5
 				vel_msg.angular.z = 0.0 
 
 			# ROTATE RIGHT
-			elif left_value == 0 and centre_value == 1 and right_value == 1: 
+			elif left_value == 1 and centre_value == 0 and right_value == 0: 
 			
 				vel_msg.linear.x = 0.5
 				vel_msg.angular.z = 0.5
 
 			# ROTATE LEFT 
-			elif left_value == 1 and centre_value == 1 and right_value == 0: 
+			elif left_value == 0 and centre_value == 0 and right_value == 1: 
 
 				vel_msg.linear.x = 0.5
 				vel_msg.angular.z = -0.5
 			
 			# STOP
-			elif left_value == 0 and centre_value == 0 and right_value == 0: 
+			elif left_value == 1 and centre_value == 1 and right_value == 1: 
 				vel_msg.linear.x = 0.0
 				vel_msg.angular.z = 0.0 
 			
