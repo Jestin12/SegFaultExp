@@ -38,7 +38,7 @@ class cInverseKinematics:
 
         # Define inverse kinematics equations
         Eq1 = Eq(self.Xe, self.L2*cos(self.Theta1) + (self.L3 + self.S4)*cos(self.Theta1 + self.Theta2))
-        Eq1 = Eq(self.Ye, self.S1 + self.L2*sin(self.Theta1) + (self.L3 + self.S4)*sin(self.Theta1 + self.Theta2))
+        Eq2 = Eq(self.Ye, self.S1 + self.L2*sin(self.Theta1) + (self.L3 + self.S4)*sin(self.Theta1 + self.Theta2))
 
         # Solve the system
         Solution = solve((Eq1, Eq1), (self.Theta1, self.Theta2))
