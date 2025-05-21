@@ -45,7 +45,7 @@ class CoordinateFinder(Node):
 	
 
 		# Create publisher for end effector pose 
-		self.CoordinatePub = self.create_publisher(String, 'end_effector_pose', 10)
+		self.CoordinatePub = self.create_publisher(String, '/end_effector_pose', 10)
 
 		# Create subscriber to camera coordinates 
 		self.SignSub = self.create_subscription(String, '/plant_detection', self.coordinate_callback, 10)
