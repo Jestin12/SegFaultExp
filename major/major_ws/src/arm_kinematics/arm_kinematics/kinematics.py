@@ -18,6 +18,7 @@ class ArmKinematics(Node):
 		#publishers
 		self.joint_publisher = self.create_publisher(String, '/joint_angles', 10)
 		self.MovePub = self.create_publisher(Twist, "/cmd_vel", 10)
+		self.status_publisher = self.create_publisher(String, '/robot_status', 10)
 
 
 		#subscribers
@@ -54,6 +55,11 @@ class ArmKinematics(Node):
 	def coordinate_callback(self, msg): 
 		self.get_logger().info(f"Detected Plant. Coordinates: {msg.data.split(' ')[-2]}, {msg.data.split(' ')[-1]}")
 
+		# Stop line following 
+		status_msg = String() 
+		status_msg.data = "STOP"
+		self.status_publisher.publish(status_msg)
+
 		# Convert camera points to floats 
 		command = msg.data.split() 
 
@@ -85,7 +91,11 @@ class ArmKinematics(Node):
 		# self.CoordinatePub.publish(pose_msg)
 
 		self.move_arm(y_point, z_point)
-            
+    
+
+	# Function to align arm to x position of detected object
+	def driveTo_x(self, x_point): 
+		None
 	
 	
 	def move_arm(self, Ye, Ze): 

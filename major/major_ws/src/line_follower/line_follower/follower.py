@@ -20,8 +20,7 @@ class Follower(Node):
 
 
 		# Initialise variables 
-		self.detected = 0
-		self.arm_state = 0
+		self.movement_command = 1
 
 		# Create publishers 
 		self.vel_publisher = self.create_publisher(Twist, "/cmd_vel", 10)
@@ -30,9 +29,9 @@ class Follower(Node):
 		self.timer = self.create_timer(0.05, self.check_sensors)
 
 		self.vel_msg_copy = Twist()
+
 		# Create subscribers 
-		# self.detection_subscriber = self.create_subscription(String, "/image_detector", self.image_detector)
-		# self.arm_subscriber = self.create_subscription(String, "/arm_process", self.arm_process)
+		self.detection_subscriber = self.create_subscription(String, "/robot_status", self.progress_detector, 10)
 
 
 	def check_sensors(self): 
@@ -53,7 +52,7 @@ class Follower(Node):
 
 
 		# Check if turtlebot is conducting detection or arm kinematics process 
-		if (self.detected and self.arm_state) == 0: 
+		if (self.movement_command) == 1: 
 
 			# STRAIGHT
 			if left_value == 1 and right_value == 1:
@@ -118,21 +117,13 @@ class Follower(Node):
 		self.vel_publisher.publish(vel_msg)
 
 
-	def image_detector(self): 
+	def progress_detector(self): 
 		msg = String() 
 
-		if msg.data == "flag": 
+		if msg.data == "START": 
 			self.detected = 1 
 		else: 
 			self.detected = 0
-
-	def arm_process(self): 
-		msg = String()
-
-		if msg.data == "Arm done process": 
-			self.arm_state = 0 
-		else: 
-			self.arm_state = 1
 	
 
 
