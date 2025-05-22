@@ -89,8 +89,6 @@ class ArmKinematics(Node):
 	
 	
 	def move_arm(self, Ye, Ze): 
-
-		# msg = String()
 		# command = msg.data.split() 
 
 		# Ye = float(command[-2])
