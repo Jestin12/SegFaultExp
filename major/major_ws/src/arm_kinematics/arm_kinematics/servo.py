@@ -3,11 +3,10 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist 
 from std_msgs.msg import String
-import time
 
 from piservo import Servo
 import time
-
+import numpy as np
 
 
 
@@ -25,14 +24,13 @@ class ServoController(Node):
 		GPIO.setup([self.BASE, self.ELBOW, self.GRIPPER], GPIO.OUT)
 
 
-
 		# Create a subscriber to the joint angles 
 		self.AngleSub = self.create_publisher(String, '/joint_angles', self.angles_callback, 10)
 
 		# Create a publisher to robot status 
 		self.status_publisher = self.create_publisher(String, '/robot_status', 10)
 
-		self.joint1 = Servo(self.BASE, min_value=0, max_value=180, min_pulse=1.6, max_pulse=2, frequency=50)
+		self.joint1 = Servo(self.BASE, min_value=0, max_value=180, min_pulse=1.6, max_pulse=2, frequency=333)
 		self.joint2 = Servo(self.ELBOW, min_value=0, max_value=180, min_pulse=1.6, max_pulse=2, frequency=50)
 		self.joint3 = Servo(self.GRIPPER, min_value=0, max_value=180, min_pulse=1.6, max_pulse=2, frequency=50)
 
@@ -45,6 +43,15 @@ class ServoController(Node):
 		theta3 = float(joint_angles[2])
 
 
+		#################### TO DO ######################
+		# - include upper and lower limits for each angle --> based on hitting the table and stuff 
+		# - I think we need to do more error checking - like which combinations of angles are not valid? 
+
+		# Check for singularities 
+		if theta2 == 0 or theta2 == np.pi: 
+			self.get_logger().info(f"Singularity Detected. Cannot move to plant.")
+		# else if pi or 0 is on path avoid taking that path ...
+
 		# Give servos angle
 		self.joint1.write(theta1) 
 		self.joint2.write(theta2)
@@ -54,16 +61,13 @@ class ServoController(Node):
 		# Timer to return arm back to base position 
 		time.sleep(10)
 		self.joint1.write(0) 
-		self.joint2.write(0)
+		self.joint2.write(30)
 		self.joint3.write(0)
 
 		# Start line following 
 		status_msg = String() 
 		status_msg.data = "START"
 		self.status_publisher.publish(status_msg)
-
-
-
 
 
 
