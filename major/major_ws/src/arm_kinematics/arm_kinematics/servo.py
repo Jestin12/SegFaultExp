@@ -2,13 +2,11 @@ import RPi.GPIO as GPIO
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist 
-from std_msgs.msg import String
-
+from std_msgs.msg import Stringssssssssssssssssss
 from piservo import Servo
 import time
 import numpy as np
-
-
+sssssssss
 
 class ServoController(Node): 
 	def __init__(self): 
@@ -16,10 +14,9 @@ class ServoController(Node):
 
 
 		# Assign GPIO pins 
-		self.BASE = 13
-		self.ELBOW = 6
-		self.GRIPPER = 5
-
+		self.BASE = 16
+		self.ELBOW = 20
+		self.GRIPPER = 13
 		GPIO.setmode(GPIO.BCM)
 		GPIO.setup([self.BASE, self.ELBOW, self.GRIPPER], GPIO.OUT)
 
@@ -48,9 +45,7 @@ class ServoController(Node):
 		# - I think we need to do more error checking - like which combinations of angles are not valid? 
 
 		# Check for singularities 
-		if theta2 == 0 or theta2 == np.pi: 
-			self.get_logger().info(f"Singularity Detected. Cannot move to plant.")
-		# else if pi or 0 is on path avoid taking that path ...
+		if check_workspace()
 
 		# Give servos angle
 		self.joint1.write(theta1) 
@@ -68,6 +63,13 @@ class ServoController(Node):
 		status_msg = String() 
 		status_msg.data = "START"
 		self.status_publisher.publish(status_msg)
+	
+	def check_workspace(self, theta1, theta2):
+		if theta2 == 0 or theta2 == np.pi: 
+			self.get_logger().info(f"Singularity Detected. Cannot move to plant.")
+		elif theta1 >= 90 
+		# else if pi or 0 is on path avoid taking that path ...
+
 
 
 
