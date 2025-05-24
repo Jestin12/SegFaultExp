@@ -15,11 +15,12 @@ setup(
     zip_safe=True,
     maintainer='alfie',
     maintainer_email='alfieeagleton@gmail.com',
-    description='TODO: Package description',
+    description='Subscribes to camera node, saves the files and stitches them together to make a 2D map.',
     license='Apache-2.0',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            'mapper = map_stitching.mapper:main',
         ],
     },
 )

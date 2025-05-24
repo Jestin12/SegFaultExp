@@ -1,6 +1,6 @@
 # ROS 2 build artifacts
-build/
 install/
+build/
 log/
 
 # Colcon cache
