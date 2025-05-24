@@ -11,9 +11,10 @@ class ArmKinematics(Node):
 	def __init__(self): 
 		super().__init__("ArmKinematics")
 
-		# Defining link lengths 
+		# Defining link lengths (cm)
 		self.L1 = 15
-		self.L2 = 30
+		self.L2_open = 25
+		self.L2_closed = 28.5
 		
 		# Creating publishers 
 		self.joint_publisher = self.create_publisher(String, '/joint_angles', 10)
@@ -24,8 +25,8 @@ class ArmKinematics(Node):
 		# Creating Subscribers 
 		self.SignSub = self.create_subscription(String, '/plant_detection', self.coordinate_callback, 10)
 
-		# Constant distances 
-		self.camera_height = 10 #cm
+		# Constant distances (cm)
+		self.camera_height = 15 
 
 		# Intrinsic calibration matrix
 		self.K = np.array([[1280.514822, 0.000000, 352.819379],
@@ -33,9 +34,9 @@ class ArmKinematics(Node):
                         [0.000000, 0.000000, 1.000000]])
 		
 		# Camera coordinates 
-		self.x_cam = -5
-		self.y_cam = 0
-		self.z_cam = -1 
+		self.x_cam = -6.6
+		self.y_cam = -19.5
+		self.z_cam = 2.5
 		self.camera_coordinates = np.array([self.x_cam, self.y_cam, self.z_cam])
 
 		# Arm base coordinates 
@@ -71,7 +72,7 @@ class ArmKinematics(Node):
 		camera_point = np.linalg.inv(self.K) @ pixel_point
         
 		# Set the height of the detected plant to be the height of the camera 
-		camera_point[2] = -self.camera_height
+		camera_point[2] = self.camera_height
 
 		homogeneous_point = np.vstack((camera_point, [[1]]))
 
