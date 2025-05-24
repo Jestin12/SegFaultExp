@@ -20,6 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            "plant_mapper = mapper.plant_mapper:main"
         ],
     },
 )

@@ -13,9 +13,9 @@ import os
 ####### Combine the two to make a map and save it to "plant_map" using save_map
 
 
-class Coordinate_Mapper(Node):
+class Plant_Mapper(Node):
     def __init__(self): 
-        super().__init__("Coordinate_Mapper")        
+        super().__init__("Plant_Mapper")        
 
         self.timer = self.create_timer(0.05, self.publish_marker)
         
@@ -110,8 +110,6 @@ class Coordinate_Mapper(Node):
         
         self.marker_pub.publish(self.marker)
         self.get_logger().info('Publishing marker')
-
-
 
 
 def main(args=None): 

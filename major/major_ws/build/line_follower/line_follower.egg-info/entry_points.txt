@@ -1,3 +1,0 @@
-[console_scripts]
-follower = line_follower.follower:main
-
