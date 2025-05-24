@@ -3,7 +3,7 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist 
 from std_msgs.msg import String 
 
-from sympy import symbols, Eq, solve, sqrt, atan2, acos, cos, sin, pprint
+from sympy import symbols, Eq, solve, sqrt, atan2, acos, cos, sin, pprint, evalf
 import numpy as np
 
 
@@ -15,15 +15,14 @@ class ArmKinematics(Node):
 		self.L1 = 15
 		self.L2 = 30
 		
-		#publishers
+		# Creating publishers 
 		self.joint_publisher = self.create_publisher(String, '/joint_angles', 10)
 		self.MovePub = self.create_publisher(Twist, "/cmd_vel", 10)
 		self.status_publisher = self.create_publisher(String, '/robot_status', 10)
 
 
-		#subscribers
+		# Creating Subscribers 
 		self.SignSub = self.create_subscription(String, '/plant_detection', self.coordinate_callback, 10)
-
 
 		# Constant distances 
 		self.camera_height = 10 #cm
@@ -83,13 +82,7 @@ class ArmKinematics(Node):
 		y_point = reference_point[1]
 		z_point = reference_point[2]
 
-		# Publish updated waypoint 
-		# pose_msg = String() 
-		# pose_msg.data = f"x: {x_point}, y: {y_point}, z: {z_point}"
-
-
-		# self.CoordinatePub.publish(pose_msg)
-
+		self.driveTo_x(x_point)
 		self.move_arm(y_point, z_point)
     
 
@@ -98,25 +91,40 @@ class ArmKinematics(Node):
 		None
 	
 	
+	# Function to check if arm can be moved 
 	def move_arm(self, Ye, Ze): 
-		# command = msg.data.split() 
-
-		# Ye = float(command[-2])
-		# Ze = float(command[-1])
 
 		# Define symbolic variables
 		Theta1, Theta2 = symbols('Theta1 Theta2')
 
-		EqY = Eq(Ye, self.L1*cos(self.Theta1) + self.L2*cos(self.Theta1 + self.Theta2))
-		EqZ = Eq(Ze, self.L1*sin(self.Theta1) + self.L2*sin(self.Theta1 + self.Theta2))
+		EqY = Eq(Ye, self.L1*cos(Theta1) + self.L2*cos(Theta1 + Theta2))
+		EqZ = Eq(Ze, self.L1*sin(Theta1) + self.L2*sin(Theta1 + Theta2))
 
 		joint_angles = solve((EqY, EqZ), (Theta1, Theta2))
 
-		# Publish the joint angles 
-		joints = String() 
-		joints.data = f"Theta 1: {joint_angles[0]}, Theta 2: {joint_angles[1]}"
-		self.joint_publisher.publish(joints)
+		# Iterate through each pair of angles to find a valid solution 
+		for idx, pair in enumerate(joint_angles): 
+			theta1 = pair[Theta1]
+			theta2 = pair[Theta2]
 
+			# Check for singularities
+			if theta2.evalf() == 0 or theta2.evalf() == np.pi: 
+				continue
+		
+			# Check if angle is in workspace 
+			if not self.in_workspace(theta1, theta2): 
+				continue
+
+			else: 
+				# Publish the joint angles if they are valid 
+				joints = String() 
+				joints.data = f"Theta 1: {theta1.evalf()}, Theta 2: {theta2.evalf()}"
+				self.joint_publisher.publish(joints)
+				break
+
+
+	def in_workspace(self, theta1, theta2): 
+		return True 
 		
 
 
@@ -130,3 +138,4 @@ def main(args=None):
 
 if __name__ == "__main__":
     main()
+
