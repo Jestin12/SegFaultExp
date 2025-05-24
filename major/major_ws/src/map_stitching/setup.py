@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'mapper = map_stitching.mapper:main',
+            'map_stitcher = map_stitching.MapStitcher:main',
         ],
     },
 )
