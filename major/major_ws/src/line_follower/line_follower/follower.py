@@ -15,7 +15,6 @@ class Follower(Node):
 
 		# Set pin numbers for IR sensors 
 		self.LEFT = 25
-		#self.CENTRE = 25
 		self.RIGHT = 26
 		
 		GPIO.setmode(GPIO.BCM)
@@ -28,17 +27,17 @@ class Follower(Node):
 		self.target_yaw = None
 		self.kp = 1.0
 		self.memory = "straight"
+		self.vel_msg_copy = Twist()
+
+		# Create timer
+		self.timer = self.create_timer(0.05, self.check_sensors)
 
 		# Create publishers 
 		self.vel_publisher = self.create_publisher(Twist, "/cmd_vel", 10)
 		self.IR_publisher = self.create_publisher(String, "/IR_value", 10)
 		
-		self.timer = self.create_timer(0.05, self.check_sensors)
-
-		self.vel_msg_copy = Twist()
-
 		# Create subscribers 
-		self.detection_subscriber = self.create_subscription(String, "/robot_status", self.progress_detector, 10)
+		self.detection_subscriber = self.create_subscription(String, "/plant_detect", self.plant_detector, 10)
 		self.imu_subscriber = self.create_subscription(Imu, '/imu', self.imu_callback,10)
 
 
@@ -55,6 +54,7 @@ class Follower(Node):
 		yaw = math.atan2(siny_cosp, cosy_cosp)
 		return yaw
 
+
 	def normalize_angle(self, angle):
         # Normalize angle to [-pi, pi]
 		while angle > math.pi:
@@ -62,12 +62,15 @@ class Follower(Node):
 		while angle < -math.pi:
 			angle += 2.0 * math.pi
 		return angle
+	
+	# def plant_detector(self, msg):
+			# EDIT BASED ON HOW THE MESSAGE IS RECIEVED
+
 
 	def check_sensors(self): 
 
 		# Extracting the values from the GPIO pins 
 		left_value = GPIO.input(self.LEFT)
-		# centre_value = GPIO.input(self.CENTRE)
 		right_value = GPIO.input(self.RIGHT)
 
 		# Publish IR values 
@@ -115,6 +118,10 @@ class Follower(Node):
 				self.memory = "right"
 				vel_msg.linear.x = 0.05
 				vel_msg.angular.z = -0.05
+
+			# Stop when you detect a plant
+			# elif 
+
 			
 			else: 
 				vel_msg.linear.x = 0.0
