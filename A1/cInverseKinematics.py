@@ -42,7 +42,7 @@ class cInverseKinematics:
 
         # Solve the system
         Solution = solve((Eq1, Eq1), (self.Theta1, self.Theta2))
-
+        
         #   Returns a list of sets [{Theta1, Theta2}, {Theta1, Theta2}, ...]
         #   Returns an empty list [] if no solutions are found
         return Solution

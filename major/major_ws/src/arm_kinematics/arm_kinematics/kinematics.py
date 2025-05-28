@@ -17,7 +17,7 @@ class ArmKinematics(Node):
 		self.L2_closed = 28.5
 		
 		# Creating publishers 
-		self.joint_publisher = self.create_publisher(String, '/joint_signals', 10)
+		self.joint_publisher = self.create_publisher(UInt32MultiArray, '/joint_signals', 10)
 		self.MovePub = self.create_publisher(Twist, "/cmd_vel", 10)
 		self.status_publisher = self.create_publisher(String, '/robot_status', 10)
 
@@ -77,7 +77,7 @@ class ArmKinematics(Node):
 		# Convert camera points to floats 
 		command = msg.data.split() 
 
-		if command[1] == "Unhealthy": 
+		if command[0] == "Unhealthy": 
 
 			u = float(command[-2])
 			v = float(command[-1])
@@ -95,61 +95,66 @@ class ArmKinematics(Node):
 			# Transform from camera to arm frame 
 			reference_point = self.CTA @ homogeneous_point
 
-			x_point = reference_point[0]
-			y_point = reference_point[1]
-			z_point = reference_point[2]
+			x_point = float(reference_point[0])
+			y_point = float(reference_point[1])
+			z_point = float(reference_point[2])
 
-			self.driveTo_x(x_point)
+			# self.driveTo_x(x_point)
 			self.move_arm(y_point, z_point)
     
 
 	# Function to align arm to x position of detected object
-	def driveTo_x(self, x_point): 
-		None
+	# def driveTo_x(self, x_point): 
+	# 	None
 	
 	
 	# Function to check if arm can be moved 
 	def move_arm(self, Ye, Ze): 
 
+
+		self.get_logger().info(f"inside func")
+
 		# Define symbolic variables
 		Theta1, Theta2 = symbols('Theta1 Theta2')
 
-		EqY = Eq(Ye, self.L1*cos(Theta1) + self.L2*cos(Theta1 - Theta2))
-		EqZ = Eq(Ze, self.L1*sin(Theta1) + self.L2*sin(Theta1 - Theta2))
+		EqY = Eq(Ye, self.L1*cos(Theta1) + self.L2_closed*cos(Theta1 - Theta2))
+		EqZ = Eq(Ze, self.L1*sin(Theta1) + self.L2_closed*sin(Theta1 - Theta2))
 
 		joint_angles = solve((EqY, EqZ), (Theta1, Theta2))
 
+		self.get_logger().info(f"something")
+
+		
 		# Iterate through each pair of angles to find a valid solution 
 		for idx, pair in enumerate(joint_angles): 
-			theta1 = pair[Theta1].evalf()
-			theta2 = pair[Theta2].evalf()
+			None
+			# theta1 = np.rad2deg(pair[Theta1].evalf())
+			# theta2 = np.rad2deg(pair[Theta2].evalf())
 
-
-			theta1_signal = self.find_dutyCycle(theta1, "base")
-			theta2_signal = self.find_dutyCycle(theta2, "elbow")
-
+			# theta1_signal = self.find_dutyCycle(theta1, self.base_servo)
+			# theta2_signal = self.find_dutyCycle(theta2, self.elbow_servo)
 
 			# Check if plant is in workspace 
-			if theta1_signal < self.base_servo["min"] or theta1_signal > self.base_servo["max"]: 
-				self.get_logger().info(f"Outside of Workspace.")
-				continue 
-			elif theta2_signal < self.elbow_servo["min"] or theta2_signal > self.elbow_servo["max"]: 
-				self.get_logger().info(f"Outside of Workspace.")
-				continue 	
+			# if theta1_signal < self.base_servo["min_duty"] or theta1_signal > self.base_servo["max_duty"]: 
+			# 	self.get_logger().info(f"Outside of Workspace.")
+			# 	continue 
+			# elif theta2_signal < self.elbow_servo["min_duty"] or theta2_signal > self.elbow_servo["max_duty"]: 
+			# 	self.get_logger().info(f"Outside of Workspace.")
+			# 	continue 	
 
 			
-			# Check for singularities
-			elif theta2 == 0: 
-				self.get_logger().info(f"Singularity Detected.")
-				continue 	
+			# # Check for singularities
+			# elif theta2 == 0: 
+			# 	self.get_logger().info(f"Singularity Detected.")
+			# 	continue 	
 
 	
-			else: 
-				# Publish the joint angles if they are valid 
-				joints = UInt32MultiArray()
-				joints.data = [theta1_signal, theta2_signal]
-				self.joint_publisher.publish(joints)
-				break
+			# else: 
+			# 	# Publish the joint angles if they are valid 
+			# 	joints = UInt32MultiArray()
+			# 	joints.data = [theta1_signal, theta2_signal]
+			# 	self.joint_publisher.publish(joints)
+			# 	break
 
 
 	# Function to find duty cycle corresponding to angles 
@@ -157,6 +162,8 @@ class ArmKinematics(Node):
 		step_size = (dict["max_angle"] - dict["min_angle"])/(dict["max_duty"] - dict["min_duty"])
 		num_steps = (angle - dict['min_angle'])/step_size
 		duty_cycle = dict["max_duty"] - num_steps 
+
+		return duty_cycle
 
 
 
