@@ -12,7 +12,6 @@ class ServoController(Node):
 	def __init__(self): 
 		super().__init__("ServoController")
 
-
 		# Assign GPIO pins 
 		self.BASE = 16
 		self.ELBOW = 20
@@ -46,6 +45,10 @@ class ServoController(Node):
 		theta1 = float(joint_angles[0]) 
 		theta2 = float(joint_angles[1])
 		theta3 = float(joint_angles[2])
+
+		
+		# Normalise angles to be meaningful in terms of the range of the servos
+		 
 
 		# Give servos angle
 		base_signal = self.find_PWM(theta1)
