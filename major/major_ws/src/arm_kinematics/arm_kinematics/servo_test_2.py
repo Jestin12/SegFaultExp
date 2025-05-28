@@ -1,28 +1,26 @@
-import RPi.GPIO as GPIO
-from time import sleep
 
-GPIO.setmode(GPIO.BCM)
 
-motor_pin = 13  
-GPIO.setup(motor_pin, GPIO.OUT)
+def find_PWM(angle, min_pw, max_pw, pwm_freq_hz): 
+		pulse_width_ms = min_pw + (angle / 180.0) * (max_pw - min_pw)
+		print(pulse_width_ms)
+		period_ms = 1000 / pwm_freq_hz
+		duty_cycle = (pulse_width_ms / period_ms) * 100
 
-motor_pwm = GPIO.PWM(motor_pin, 50)
-motor_pwm.start(0)  
+		return duty_cycle
 
-try:
-    while True:
-     
-        motor_pwm.ChangeDutyCycle(7.5)   
-        sleep(1)
 
-        motor_pwm.ChangeDutyCycle(10.0)  
-        sleep(1)
 
-        motor_pwm.ChangeDutyCycle(12.5) 
-        sleep(1)
+while True:
 
-except KeyboardInterrupt:
-    pass
+    ameline = input("enter an angle:")
+    angle = float(ameline)
 
-motor_pwm.stop()
-GPIO.cleanup()
+    print(find_PWM(angle, 1.5, 2.5, 50))
+    
+    
+
+
+
+
+
+

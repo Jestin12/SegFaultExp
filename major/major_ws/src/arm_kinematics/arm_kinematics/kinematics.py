@@ -1,7 +1,7 @@
 import rclpy 
 from rclpy.node import Node
 from geometry_msgs.msg import Twist 
-from std_msgs.msg import String 
+from std_msgs.msg import String, UInt32MultiArray
 
 from sympy import symbols, Eq, solve, sqrt, atan2, acos, cos, sin, pprint, evalf
 import numpy as np
@@ -17,7 +17,7 @@ class ArmKinematics(Node):
 		self.L2_closed = 28.5
 		
 		# Creating publishers 
-		self.joint_publisher = self.create_publisher(String, '/joint_angles', 10)
+		self.joint_publisher = self.create_publisher(String, '/joint_signals', 10)
 		self.MovePub = self.create_publisher(Twist, "/cmd_vel", 10)
 		self.status_publisher = self.create_publisher(String, '/robot_status', 10)
 
@@ -50,6 +50,20 @@ class ArmKinematics(Node):
 		# Camera to arm base transformation matrix 
 		self.CTA = np.eye(4)
 		self.CTA[:3, 3] = self.translation_vector
+
+
+		# Servo duty cycle parameters 
+		self.base_servo = {"name": "base",
+							"min_duty": 17,
+							"max_duty": 63, 
+							"min_angle": 10, 
+							"max_angle": 138}
+		
+		self.elbow_servo = {"name": "elbow",
+						 	"max_duty": 12, 
+							"min_duty": 5,
+							"max_angle": 138, 
+							"min_angle": 0}
 	
 
 	def coordinate_callback(self, msg): 
@@ -63,28 +77,30 @@ class ArmKinematics(Node):
 		# Convert camera points to floats 
 		command = msg.data.split() 
 
-		u = float(command[-2])
-		v = float(command[-1])
+		if command[1] == "Unhealthy": 
 
-		# Transform from 2D camera to 3D camera frame 
-		pixel_point = np.vstack((np.array([[u], [v]]), [[1]])) 
-		
-		camera_point = np.linalg.inv(self.K) @ pixel_point
-        
-		# Set the height of the detected plant to be the height of the camera 
-		camera_point[2] = self.camera_height
+			u = float(command[-2])
+			v = float(command[-1])
 
-		homogeneous_point = np.vstack((camera_point, [[1]]))
+			# Transform from 2D camera to 3D camera frame 
+			pixel_point = np.vstack((np.array([[u], [v]]), [[1]])) 
+			
+			camera_point = np.linalg.inv(self.K) @ pixel_point
+			
+			# Set the height of the detected plant to be the height of the camera 
+			camera_point[2] = self.camera_height
 
-		# Transform from camera to arm frame 
-		reference_point = self.CTA @ homogeneous_point
+			homogeneous_point = np.vstack((camera_point, [[1]]))
 
-		x_point = reference_point[0]
-		y_point = reference_point[1]
-		z_point = reference_point[2]
+			# Transform from camera to arm frame 
+			reference_point = self.CTA @ homogeneous_point
 
-		self.driveTo_x(x_point)
-		self.move_arm(y_point, z_point)
+			x_point = reference_point[0]
+			y_point = reference_point[1]
+			z_point = reference_point[2]
+
+			self.driveTo_x(x_point)
+			self.move_arm(y_point, z_point)
     
 
 	# Function to align arm to x position of detected object
@@ -98,35 +114,51 @@ class ArmKinematics(Node):
 		# Define symbolic variables
 		Theta1, Theta2 = symbols('Theta1 Theta2')
 
-		EqY = Eq(Ye, self.L1*cos(Theta1) + self.L2*cos(Theta1 + Theta2))
-		EqZ = Eq(Ze, self.L1*sin(Theta1) + self.L2*sin(Theta1 + Theta2))
+		EqY = Eq(Ye, self.L1*cos(Theta1) + self.L2*cos(Theta1 - Theta2))
+		EqZ = Eq(Ze, self.L1*sin(Theta1) + self.L2*sin(Theta1 - Theta2))
 
 		joint_angles = solve((EqY, EqZ), (Theta1, Theta2))
 
 		# Iterate through each pair of angles to find a valid solution 
 		for idx, pair in enumerate(joint_angles): 
-			theta1 = pair[Theta1]
-			theta2 = pair[Theta2]
+			theta1 = pair[Theta1].evalf()
+			theta2 = pair[Theta2].evalf()
 
+
+			theta1_signal = self.find_dutyCycle(theta1, "base")
+			theta2_signal = self.find_dutyCycle(theta2, "elbow")
+
+
+			# Check if plant is in workspace 
+			if theta1_signal < self.base_servo["min"] or theta1_signal > self.base_servo["max"]: 
+				self.get_logger().info(f"Outside of Workspace.")
+				continue 
+			elif theta2_signal < self.elbow_servo["min"] or theta2_signal > self.elbow_servo["max"]: 
+				self.get_logger().info(f"Outside of Workspace.")
+				continue 	
+
+			
 			# Check for singularities
-			if theta2.evalf() == 0 or theta2.evalf() == np.pi: 
-				continue
-		
-			# Check if angle is in workspace 
-			if not self.in_workspace(theta1, theta2): 
-				continue
+			elif theta2 == 0: 
+				self.get_logger().info(f"Singularity Detected.")
+				continue 	
 
+	
 			else: 
 				# Publish the joint angles if they are valid 
-				joints = String() 
-				joints.data = f"Theta 1: {theta1.evalf()}, Theta 2: {theta2.evalf()}"
+				joints = UInt32MultiArray()
+				joints.data = [theta1_signal, theta2_signal]
 				self.joint_publisher.publish(joints)
 				break
 
 
-	def in_workspace(self, theta1, theta2): 
-		return True 
-		
+	# Function to find duty cycle corresponding to angles 
+	def find_dutyCycle(self, angle, dict):
+		step_size = (dict["max_angle"] - dict["min_angle"])/(dict["max_duty"] - dict["min_duty"])
+		num_steps = (angle - dict['min_angle'])/step_size
+		duty_cycle = dict["max_duty"] - num_steps 
+
+
 
 
 

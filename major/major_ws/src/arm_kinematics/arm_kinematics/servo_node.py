@@ -51,9 +51,9 @@ class ServoController(Node):
 		 
 
 		# Give servos angle
-		base_signal = self.find_PWM(theta1)
-		elbow_signal = self.find_PWM(theta2)
-		gripper_signal = self.find_PWM(theta3)
+		base_signal = self.find_PWM(theta1, 0.5, 2.5, 333)
+		elbow_signal = self.find_PWM(theta2, 1.0, 2.5, 50)
+		gripper_signal = self.find_PWM(theta3, 1.5, 2.5, 50)
 
 		# Set servo positions
 		self.base_pwm.ChangeDutyCycle(base_signal)   
@@ -65,14 +65,33 @@ class ServoController(Node):
 		self.gripper_pwm.ChangeDutyCycle(gripper_signal)   
 		sleep(1)
 
+
+
+		# Return the arm to base position
+		self.base_pwm.ChangeDutyCycle(self.find_PWM(0, 0.5, 2.5, 333))   
+		sleep(1)
+
+		self.elbow_pwm.ChangeDutyCycle(self.find_PWM(0, 1.0, 2.5, 50))   
+		sleep(1)
+
+		self.gripper_pwm.ChangeDutyCycle(self.find_PWM(0, 1.5, 2.5, 50))   
+		sleep(1)
+
+
+
 		# Start line following 
 		status_msg = String() 
 		status_msg.data = "START"
 		self.status_publisher.publish(status_msg)
 
 
-	def find_PWM(self, angle): 
-		None
+	def find_PWM(self, angle, min_pw, max_pw, pwm_freq_hz): 
+		pulse_width_ms = min_pw + (angle / 180.0) * (max_pw - min_pw)
+		period_ms = 1000 / pwm_freq_hz
+		duty_cycle = (pulse_width_ms / period_ms) * 100
+
+		return duty_cycle
+	
 
 def main(args=None):
     rclpy.init(args=args)
