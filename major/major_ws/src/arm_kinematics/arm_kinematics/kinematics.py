@@ -36,7 +36,7 @@ class ArmKinematics(Node):
 		# Camera coordinates 
 		self.x_cam = -6.6
 		self.y_cam = -19.5
-		self.z_cam = -2.5
+		self.z_cam = 2.5
 		self.camera_coordinates = np.array([self.x_cam, self.y_cam, self.z_cam])
 
 		# Arm base coordinates 
@@ -88,7 +88,7 @@ class ArmKinematics(Node):
 			camera_point = np.linalg.inv(self.K) @ pixel_point
 			
 			# Set the height of the detected plant to be the height of the camera 
-			camera_point[2] = self.camera_height
+			camera_point[2] = -self.camera_height
 
 			homogeneous_point = np.vstack((camera_point, [[1]]))
 
