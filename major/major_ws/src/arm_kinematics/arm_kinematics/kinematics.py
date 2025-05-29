@@ -115,55 +115,73 @@ class ArmKinematics(Node):
 
 		self.get_logger().info(f"inside func")
 
-		# Define symbolic variables
-		Theta1, Theta2 = symbols('Theta1 Theta2')
+		# # Define symbolic variables
+		# Theta1, Theta2 = symbols('Theta1 Theta2')
 
-		EqY = Eq(Ye, self.L1*cos(Theta1) + self.L2_closed*cos(Theta2 - Theta1))
-		EqZ = Eq(Ze, self.L1*sin(Theta1) - self.L2_closed*sin(Theta2 - Theta1))
+		# EqY = Eq(Ye, self.L1*cos(Theta1) + self.L2_closed*cos(Theta2 - Theta1))
+		# EqZ = Eq(Ze, self.L1*sin(Theta1) - self.L2_closed*sin(Theta2 - Theta1))
 
-		joint_angles = solve((EqY, EqZ), (Theta1, Theta2))
+		# joint_angles = solve((EqY, EqZ), (Theta1, Theta2))
 
-		self.get_logger().info(f"Found Angles.")
-		print(joint_angles)
+		r = np.sqrt(Ye**2 + Ze**2)
+
+		# Ensure values are proper floats
+		numerator = float(self.L1**2 + self.L2_closed**2 - r**2)
+		denominator = float(2 * self.L1 * self.L2_closed)
+		cos_angle = numerator / denominator
+
+		Theta2 = np.pi - np.arccos(cos_angle)
+
+		numerator1 = float(self.L1**2 - self.L2_closed**2 + r**2)
+		denominator1 = float(2 * self.L1 * r)
+		cos_angle1 = numerator1 / denominator1
+
+		Theta1 = np.arccos(cos_angle1) + np.arctan2(Ze, Ye)
+
+		# self.get_logger().info(f"Found Angles.")
+		# print(joint_angles)
 
 		
 		# Iterate through each pair of angles to find a valid solution 
-		for idx, pair in enumerate(joint_angles): 
+		# for idx, pair in enumerate(joint_angles): 
 
-			theta1 = np.rad2deg(float(pair[0].evalf().as_real_imag()[0]))
-			theta2 = np.rad2deg(float(pair[1].evalf().as_real_imag()[0]))
+			# theta1 = np.rad2deg(float(pair[0].evalf().as_real_imag()[0]))
+			# theta2 = np.rad2deg(float(pair[1].evalf().as_real_imag()[0]))
 
-			self.get_logger().info(f"theta 1: {theta1}")
-			self.get_logger().info(f"theta 2: {theta2}")
+		theta1 = np.rad2deg(Theta1)
+		theta2 = np.rad2deg(Theta2)
 
-			theta1_signal = self.find_dutyCycle(theta1, self.base_servo)
-			theta2_signal = self.find_dutyCycle(theta2, self.elbow_servo)
+		self.get_logger().info(f"theta 1: {theta1}")
+		self.get_logger().info(f"theta 2: {theta2}")
 
-			self.get_logger().info(f"1: {theta1_signal}")
-			self.get_logger().info(f"2: {theta2_signal}")
+		theta1_signal = self.find_dutyCycle(theta1, self.base_servo)
+		theta2_signal = self.find_dutyCycle(theta2, self.elbow_servo)
 
-			# Check if plant is in workspace 
-			if theta1_signal < self.base_servo["min_duty"] or theta1_signal > self.base_servo["max_duty"]: 
-				self.get_logger().info(f"Outside of Workspace.")
-				continue 
-			elif theta2_signal < self.elbow_servo["min_duty"] or theta2_signal > self.elbow_servo["max_duty"]: 
-				self.get_logger().info(f"Outside of Workspace.")
-				continue 	
+		self.get_logger().info(f"1: {theta1_signal}")
+		self.get_logger().info(f"2: {theta2_signal}")
 
-			
-			# Check for singularities
-			elif theta2 == 0: 
-				self.get_logger().info(f"Singularity Detected.")
-				continue 	
+		# Check if plant is in workspace 
+		if theta1_signal < self.base_servo["min_duty"] or theta1_signal > self.base_servo["max_duty"]: 
+			self.get_logger().info(f"Outside of Workspace.")
+			# continue 
+		elif theta2_signal < self.elbow_servo["min_duty"] or theta2_signal > self.elbow_servo["max_duty"]: 
+			self.get_logger().info(f"Outside of Workspace.")
+			# continue 	
 
-	
-			else: 
-				# Publish the joint angles if they are valid 
-				joints = UInt32MultiArray()
-				joints.data = [int(np.round(theta1_signal)), int(np.round(theta2_signal))]
-				self.joint_publisher.publish(joints)
-				print("Published Angles")
-				break
+		
+		# Check for singularities
+		elif theta2 == 0: 
+			self.get_logger().info(f"Singularity Detected.")
+			# continue 	
+
+
+		else: 
+			# Publish the joint angles if they are valid 
+			joints = UInt32MultiArray()
+			joints.data = [int(np.round(theta1_signal)), int(np.round(theta2_signal))]
+			self.joint_publisher.publish(joints)
+			print("Published Angles")
+			# break
 
 
 	# Function to find duty cycle corresponding to angles 
