@@ -14,7 +14,7 @@ class ServoController(Node):
 
 		# Assign GPIO pins 
 		self.BASE = 16
-		self.ELBOW = 20
+		self.ELBOW = 26
 		self.GRIPPER = 13
 		
 		GPIO.setmode(GPIO.BCM)

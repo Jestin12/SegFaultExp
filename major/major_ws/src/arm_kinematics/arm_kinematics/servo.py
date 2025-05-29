@@ -3,9 +3,10 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist 
 from std_msgs.msg import String
-from piservo import Servo
+# from piservo import Servo
 import time
 import numpy as np
+
 
 
 class ServoController(Node): 
@@ -14,42 +15,117 @@ class ServoController(Node):
 
 
 		# Assign GPIO pins 
-		self.BASE = 16
-		self.ELBOW = 20
-		self.GRIPPER = 13
-		
-		GPIO.setmode(GPIO.BCM)
-		GPIO.setup([self.BASE, self.ELBOW, self.GRIPPER], GPIO.OUT)
+		self.SHOULDERpin = 16
+		self.ELBOWpin = 26
+		self.HANDpin = 13
 
+		GPIO.setmode(GPIO.BCM)
+
+		GPIO.setwarnings(False)
+
+		GPIO.setup(self.SHOULDERpin, GPIO.OUT)
+		GPIO.setup(self.ELBOWpin, GPIO.OUT)
+		GPIO.setup(self.HANDpin, GPIO.OUT)
+
+
+		self.shoulder = GPIO.PWM(self.SHOULDERpin, 333)
+		self.elbow = GPIO.PWM(self.ELBOWpin, 50)
+		self.hand = GPIO.PWM(self.HANDpin, 50)
+
+		self.joints = [self.shoulder, self.elbow, self.hand]
+
+		self.shoulder.start(0)  
+		self.elbow.start(0)
+		self.hand.start(0)
+
+		self.shoulder_duty = 18
+		self.elbow_duty = 5
+		self.hand_duty = 8
+
+		self.joints_duty = [self.shoulder_duty, self.elbow_duty, self.hand_duty]
+
+		self.shoulder.ChangeDutyCycle(self.shoulder_duty)
+		self.elbow.ChangeDutyCycle(self.elbow_duty)
+		self.hand.ChangeDutyCycle(self.hand_duty)
+		
+		self.get_logger().info(f'joint{0}, duty-cycle: {self.joints_duty[0]})')
+		self.get_logger().info(f'joint{1}, duty-cycle: {self.joints_duty[1]})')
+		self.get_logger().info(f'joint{2}, duty-cycle: {self.joints_duty[2]})')
 
 		# Create a subscriber to the joint angles 
-		self.AngleSub = self.create_publisher(String, '/joint_angles', self.angles_callback, 10)
+		self.AngleSub = self.create_subscription(String, '/joint_angles', self.angles_callback, 10)
 
 		# Create a publisher to robot status 
 		self.status_publisher = self.create_publisher(String, '/robot_status', 10)
 
-		self.joint1 = Servo(self.BASE, min_value=0, max_value=180, min_pulse=1.6, max_pulse=2, frequency=333)
-		self.joint2 = Servo(self.ELBOW, min_value=0, max_value=180, min_pulse=1.6, max_pulse=2, frequency=50)
-		self.joint3 = Servo(self.GRIPPER, min_value=0, max_value=180, min_pulse=1.6, max_pulse=2, frequency=50)
-
 	
 	def angles_callback(self, msg):
-		joint_angles = msg.data.split()
 
-		theta1 = float(joint_angles[0]) 
-		theta2 = float(joint_angles[1])
-		theta3 = float(joint_angles[2])
 
-		# Give servos angle
-		self.joint1.write(theta1) 
-		self.joint2.write(theta2)
-		self.joint3.write(theta3)
+		JointDutyString = msg.data.split(",")
 
-		# Timer to return arm back to base position 
-		time.sleep(10)
-		self.joint1.write(0) 
-		self.joint2.write(30)
-		self.joint3.write(0)
+		JointDuty = [float(x) for x in JointDutyString]
+		self.get_logger().info(f'Received: {JointDuty}')
+
+		if isinstance(JointDuty[0], float):		
+			if JointDuty[0] > 63:
+				JointDuty[0] = 63
+			elif JointDuty[0] < 17:
+				JointDuty[0] = 17
+
+		self.get_logger().info(f"Base duty: {JointDuty[0]}")
+
+		if isinstance(JointDuty[1], float):
+			if JointDuty[1] > 12.5:
+				JointDuty[1] = 12.5
+			elif JointDuty[1] < 5:
+				JointDuty[1] = 5
+
+		self.get_logger().info(f"Elbow duty: {JointDuty[1]}")
+
+
+		# if isinstance(JointDuty[2], float):
+		# 	if JointDuty[2] > 12:
+		# 		JointDuty[2] = 12
+		# 	elif JointDuty[2] < 8:
+		# 		JointDuty[2] = 8
+
+		# self.get_logger().info(f"Hand duty: {JointDuty[2]}")
+
+		order = list(range(2))
+		order.reverse()
+
+
+		self.joints[2].ChangeDutyCycle(12)
+
+		for i in order:
+
+			self.joints[i].ChangeDutyCycle(JointDuty[i])
+			self.get_logger().info(f'joint{i}, duty-cycle: {JointDuty[i]})')
+
+			self.get_logger().info(f'joint{i} done')
+
+			self.joints_duty[i] = JointDuty[i]
+
+			if self.joints_duty[i] == JointDuty[i]: 
+				self.get_logger().info("no change")
+
+		self.get_logger().info(f"Waiting for arm to move")
+		time.sleep(2)
+
+		self.joints[2].ChangeDutyCycle(8)
+		self.get_logger().info(f"Closing hand")
+		time.sleep(2)
+				
+		self.shoulder.ChangeDutyCycle(18)
+		self.elbow.ChangeDutyCycle(5)
+		self.hand.ChangeDutyCycle(8)
+		self.get_logger().info(f"Returning to home position")
+		time.sleep(2)
+		
+		# for i in range(3):
+		# 	time.sleep(1)
+		# 	self.get_logger().info(f"Waiting for arm to finish {i}")
 
 		# Start line following 
 		status_msg = String() 

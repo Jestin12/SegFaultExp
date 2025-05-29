@@ -1,26 +1,77 @@
+import RPi.GPIO as GPIO
+from time import sleep
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+
+shoulder_pin =16
+elbow_pin =26
+hand_pin =13
+GPIO.setup(shoulder_pin, GPIO.OUT)
+GPIO.setup(elbow_pin, GPIO.OUT)
+GPIO.setup(hand_pin, GPIO.OUT)
 
 
-def find_PWM(angle, min_pw, max_pw, pwm_freq_hz): 
-		pulse_width_ms = min_pw + (angle / 180.0) * (max_pw - min_pw)
-		print(pulse_width_ms)
-		period_ms = 1000 / pwm_freq_hz
-		duty_cycle = (pulse_width_ms / period_ms) * 100
+shoulder = GPIO.PWM(shoulder_pin,333)
+elbow = GPIO.PWM(elbow_pin,50)
+hand = GPIO.PWM(hand_pin,50)
 
-		return duty_cycle
-
-
-
-while True:
-
-    ameline = input("enter an angle:")
-    angle = float(ameline)
-
-    print(find_PWM(angle, 1.5, 2.5, 50))
-    
-    
+shoulder.start(0)  
+elbow.start(0)
+hand.start(0)
 
 
+try:
+    while True:
+
+        joint, duty = input("Please enter a joint and duty cycle (a,10):").split(",")
+        print(joint)
+        duty = float(duty)
+        if (joint):
+            match joint: 
+                case "s":
+                    print("shoulder")
+                    if duty > 63:
+                        duty = 63
+                    elif duty < 17:
+                        duty = 17
+                    print("duty")
+                                  
+                    shoulder.ChangeDutyCycle(float(duty)) 
+
+                case "e":
+                    if duty > 12.5:
+                        duty = 12.5
+                    elif duty < 5:
+                        duty = 5
+
+                    elbow.ChangeDutyCycle(float(duty)) 
+
+                case "h":
+                    if duty > 12:
+                        duty = 12
+                    elif duty < 8:
+                        duty = 8
+
+                    hand.ChangeDutyCycle(float(duty)) 
+
+        sleep(1)
 
 
 
+        # .ChangeDutyCycle(float(ameline))   
+
+        #motor_pwm.ChangeDutyCycle(7.0)  
+        #sleep(1)
+
+        #motor_pwm.ChangeDutyCycle(9.5) 
+        #sleep(1)
+
+except KeyboardInterrupt:
+    pass
+
+shoulder.stop()
+elbow.stop()
+hand.stop()
+GPIO.cleanup()
 

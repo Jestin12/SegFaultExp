@@ -20,7 +20,9 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-			'arm_kinematics = arm_kinematics.kinematics:main'
+			'arm_kinematics = arm_kinematics.kinematics:main',
+            'servo = arm_kinematics.servo:main',
+            'tester = arm_kinematics.tester:main'
         ],
     },
 )
