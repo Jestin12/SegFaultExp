@@ -5,7 +5,7 @@ from geometry_msgs.msg import Twist
 from std_msgs.msg import String
 from sensor_msgs.msg import Imu
 import math
-
+import time
 
 import os
 
@@ -28,6 +28,7 @@ class Follower(Node):
 		self.kp = 1.0
 		self.memory = "straight"
 		self.vel_msg_copy = Twist()
+		self.turn_count = 0
 
 		# Create timer
 		self.timer = self.create_timer(0.05, self.check_sensors)
@@ -37,34 +38,26 @@ class Follower(Node):
 		self.IR_publisher = self.create_publisher(String, "/IR_value", 10)
 		
 		# Create subscribers 
-		self.detection_subscriber = self.create_subscription(String, "/plant_detect", self.plant_detector, 10)
-		self.imu_subscriber = self.create_subscription(Imu, '/imu', self.imu_callback,10)
+		self.detection_subscriber = self.create_subscription(String, '/plant_detect', self.plant_check, 10)
+		self.servo_subscriber = self.create_subscription(String, '/robot_status', self.servo_motion, 10)
 
 
-	def imu_callback(self, msg):
-		q = msg.orientation
-		yaw = self.quaterion_to_yaw(q)
-		self.current_yaw = yaw
+	def rotate_90_degrees(self):
+		angular_velocity = 0.05
 
+		angle = math.pi / 2
+		time_to_rotate = angle / abs(angular_velocity)
 
-	def quaternion_to_yaw(self, q):
-        # Convert quaternion to yaw angle
-		siny_cosp = 2 * (q.w * q.z + q.x * q.y)
-		cosy_cosp = 1 - 2 * (q.y**2 + q.z**2)
-		yaw = math.atan2(siny_cosp, cosy_cosp)
-		return yaw
+		vel_msg = Twist()
+		vel_msg.angular.z = angular_velocity
+		self.vel_msg_copy = vel_msg
+		self.vel_publisher.publish(vel_msg)
 
+		time.sleep(time_to_rotate * 1)
 
-	def normalize_angle(self, angle):
-        # Normalize angle to [-pi, pi]
-		while angle > math.pi:
-			angle -= 2.0 * math.pi
-		while angle < -math.pi:
-			angle += 2.0 * math.pi
-		return angle
-	
-	# def plant_detector(self, msg):
-			# EDIT BASED ON HOW THE MESSAGE IS RECIEVED
+		vel_msg.angular.z = 0.0
+		self.vel_msg_copy = vel_msg
+		self.vel_publisher.publish(vel_msg)
 
 
 	def check_sensors(self): 
@@ -88,39 +81,23 @@ class Follower(Node):
 
 			# STRAIGHT
 			if left_value == 1 and right_value == 1:
-				
-				# Use a KP controller to keep it straight while travelling in a straight line
-				if ((self.target_yaw == None) and (self.memory == "straight")):
-					self.target_yaw = self.current_yaw
-
-				self.memory = "straight"
-
-				yaw_error = self.normalize_angle(self.current_yaw - self.target_yaw)
-
-				# Check if the robot deviated from initial yaw and apply correction for angular velocity
-				ang_correction = self.kp * yaw_error
-
 				vel_msg.linear.x = 0.05
-				vel_msg.angular.z = -ang_correction
 				
 
 			# ROTATE RIGHT
 			elif left_value == 0 and right_value == 1: 
 				# Reset yaw and begin 
-				self.target_yaw = None
-				self.memory = "left"
 				vel_msg.linear.x = 0.05
 				vel_msg.angular.z = 0.05
 
 			# ROTATE LEFT 
 			elif left_value == 1 and right_value == 0: 
-				self.target_yaw = None
-				self.memory = "right"
 				vel_msg.linear.x = 0.05
 				vel_msg.angular.z = -0.05
 
 			# Stop when you detect a plant
-			# elif 
+			elif left_value == 0 and right_value == 0:
+				self.rotate_90_degrees()
 
 			
 			else: 
@@ -131,19 +108,30 @@ class Follower(Node):
 			vel_msg.linear.x = 0.0
 			vel_msg.angular.z = 0.0 
 
+		
 		self.vel_msg_copy = vel_msg
 
 		# Publish movement command
 		self.vel_publisher.publish(vel_msg)
 
 
-	def progress_detector(self): 
+	def servo_motion(self): 
 		msg = String() 
 
-		if msg.data == "START": 
-			self.detected = 1 
+		if msg.data == "done": 
+			self.movement_command = 1
 		else: 
-			self.detected = 0
+			self.movement_command = 0
+
+
+	def plant_check(self): 
+		msg = String() 
+		split_message = msg.split(" ")
+		
+		if split_message[0] == "Unhealthy": 
+			self.movement_command = 0
+		else: 
+			self.movement_command = 1
 	
 
 

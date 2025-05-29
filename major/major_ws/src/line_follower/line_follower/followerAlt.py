@@ -3,16 +3,18 @@ import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist 
 from std_msgs.msg import String
+from sensor_msgs.msg import Imu
+import math
+import time
 
 import os
 
-class Follower(Node): 
+class Followeralt(Node): 
 	def __init__(self): 
 		super().__init__("Follower")
 
 		# Set pin numbers for IR sensors 
 		self.LEFT = 25
-		#self.CENTRE = 25
 		self.RIGHT = 26
 		
 		GPIO.setmode(GPIO.BCM)
@@ -20,26 +22,50 @@ class Follower(Node):
 
 
 		# Initialise variables 
-		self.detected = 0
-		self.arm_state = 0
+		self.movement_command = 1
+		self.current_yaw = 0.0
+		self.target_yaw = None
+		self.kp = 1.0
+		self.memory = "straight"
+		self.vel_msg_copy = Twist()
+		self.turn_count = 0
+
+		# Create timer
+		self.timer = self.create_timer(0.05, self.check_sensors)
 
 		# Create publishers 
 		self.vel_publisher = self.create_publisher(Twist, "/cmd_vel", 10)
 		self.IR_publisher = self.create_publisher(String, "/IR_value", 10)
-
-		self.timer = self.create_timer(0.05, self.check_sensors)
-
-		self.vel_msg_copy = Twist()
+		
 		# Create subscribers 
-		# self.detection_subscriber = self.create_subscription(String, "/image_detector", self.image_detector)
-		# self.arm_subscriber = self.create_subscription(String, "/arm_process", self.arm_process)
+		self.detection_subscriber = self.create_subscription(String, '/plant_detect', self.plant_check, 10)
+		self.servo_subscriber = self.create_subscription(String, '/robot_status', self.servo_motion, 10)
+
+
+	def rotate_90_degrees(self):
+		linear_velocity = 0.018
+		angular_velocity = 0.224
+
+		angle = math.pi / 2
+		time_to_rotate = angle / abs(angular_velocity)
+
+		vel_msg = Twist()
+		vel_msg.linear.x = linear_velocity
+		vel_msg.angular.z = angular_velocity
+		self.vel_msg_copy = vel_msg
+		self.vel_publisher.publish(vel_msg)
+
+		time.sleep(time_to_rotate * 1)
+
+		vel_msg.angular.z = 0.0
+		self.vel_msg_copy = vel_msg
+		self.vel_publisher.publish(vel_msg)
 
 
 	def check_sensors(self): 
 
 		# Extracting the values from the GPIO pins 
 		left_value = GPIO.input(self.LEFT)
-		# centre_value = GPIO.input(self.CENTRE)
 		right_value = GPIO.input(self.RIGHT)
 
 		# Publish IR values 
@@ -53,25 +79,30 @@ class Follower(Node):
 
 
 		# Check if turtlebot is conducting detection or arm kinematics process 
-		if (self.detected and self.arm_state) == 0: 
+		if (self.movement_command) == 1: 
 
 			# STRAIGHT
 			if left_value == 1 and right_value == 1:
 				vel_msg.linear.x = 0.05
-				# self.vel_msg.angular.z = 0.0 
 				
 
 			# ROTATE RIGHT
 			elif left_value == 0 and right_value == 1: 
-				# self.memory = "left"
+				# Reset yaw and begin 
+				# change based on size of the arc
 				vel_msg.linear.x = 0.05
-				vel_msg.angular.z = 0.1
+				vel_msg.angular.z = 0.05
 
 			# ROTATE LEFT 
 			elif left_value == 1 and right_value == 0: 
-				# self.memory = "right"
+				# change based on size of the arc
 				vel_msg.linear.x = 0.05
-				vel_msg.angular.z = -0.1
+				vel_msg.angular.z = -0.05
+
+			# Stop when you detect a plant
+			elif left_value == 0 and right_value == 0:
+				self.rotate_90_degrees()
+
 			
 			else: 
 				vel_msg.linear.x = 0.0
@@ -81,65 +112,37 @@ class Follower(Node):
 			vel_msg.linear.x = 0.0
 			vel_msg.angular.z = 0.0 
 
+		
 		self.vel_msg_copy = vel_msg
-
-		# # Check if turtlebot is conducting detection or arm kinematics process 
-		# if (self.detected and self.arm_state) == 0: 
-
-		# 	# STRAIGHT
-		# 	if left_value == 0 and centre_value == 0 and right_value == 0:
-		# 		vel_msg.linear.x = 0.5
-		# 		vel_msg.angular.z = 0.0 
-
-		# 	# ROTATE RIGHT
-		# 	elif left_value == 1 and centre_value == 0 and right_value == 0: 
-			
-		# 		vel_msg.linear.x = 0.5
-		# 		vel_msg.angular.z = 0.5
-
-		# 	# ROTATE LEFT 
-		# 	elif left_value == 0 and centre_value == 0 and right_value == 1: 
-
-		# 		vel_msg.linear.x = 0.5
-		# 		vel_msg.angular.z = -0.5
-			
-		# 	# STOP
-		# 	elif left_value == 1 and centre_value == 1 and right_value == 1: 
-		# 		vel_msg.linear.x = 0.0
-		# 		vel_msg.angular.z = 0.0 
-			
-
-		# else: 
-		# 	vel_msg.linear.x = 0.0
-		# 	vel_msg.angular.z = 0.0 
-
 
 		# Publish movement command
 		self.vel_publisher.publish(vel_msg)
 
 
-	def image_detector(self): 
+	def servo_motion(self): 
 		msg = String() 
 
-		if msg.data == "flag": 
-			self.detected = 1 
+		if msg.data == "done": 
+			self.movement_command = 1
 		else: 
-			self.detected = 0
+			self.movement_command = 0
 
-	def arm_process(self): 
-		msg = String()
 
-		if msg.data == "Arm done process": 
-			self.arm_state = 0 
+	def plant_check(self): 
+		msg = String() 
+		split_message = msg.split(" ")
+		
+		if split_message[0] == "Unhealthy": 
+			self.movement_command = 0
 		else: 
-			self.arm_state = 1
+			self.movement_command = 1
 	
 
 
 
 def main(args=None): 
 	rclpy.init(args=args)
-	node = Follower()
+	node = Followeralt()
 	rclpy.spin(node)
 	rclpy.shutdown()
 
