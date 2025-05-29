@@ -14,8 +14,8 @@ class Followeralt(Node):
 		super().__init__("Follower")
 
 		# Set pin numbers for IR sensors 
-		self.LEFT = 25
-		self.RIGHT = 26
+		self.LEFT = 19
+		self.RIGHT = 25
 		
 		GPIO.setmode(GPIO.BCM)
 		GPIO.setup([self.LEFT, self.RIGHT], GPIO.IN)
@@ -43,8 +43,8 @@ class Followeralt(Node):
 
 
 	def rotate_90_degrees(self):
-		linear_velocity = 0.018
-		angular_velocity = 0.224
+		linear_velocity = 0.025
+		angular_velocity = -0.224
 
 		angle = math.pi / 2
 		time_to_rotate = angle / abs(angular_velocity)
@@ -55,7 +55,7 @@ class Followeralt(Node):
 		self.vel_msg_copy = vel_msg
 		self.vel_publisher.publish(vel_msg)
 
-		time.sleep(time_to_rotate * 1)
+		time.sleep(time_to_rotate * 0.25)
 
 		vel_msg.angular.z = 0.0
 		self.vel_msg_copy = vel_msg
@@ -91,13 +91,13 @@ class Followeralt(Node):
 				# Reset yaw and begin 
 				# change based on size of the arc
 				vel_msg.linear.x = 0.05
-				vel_msg.angular.z = 0.05
+				vel_msg.angular.z = -0.05
 
 			# ROTATE LEFT 
 			elif left_value == 1 and right_value == 0: 
 				# change based on size of the arc
 				vel_msg.linear.x = 0.05
-				vel_msg.angular.z = -0.05
+				vel_msg.angular.z = 0.05
 
 			# Stop when you detect a plant
 			elif left_value == 0 and right_value == 0:
