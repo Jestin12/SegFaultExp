@@ -29,10 +29,11 @@ class ArmKinematics(Node):
 		self.camera_height = 15 
 
 		# Intrinsic calibration matrix
-		self.K = np.array([[1280.514822, 0.000000, 352.819379],
-                        [0.000000, 1279.348064, 260.395041],
+		self.K = np.array([[1234.269707, 0.000000, 250.407578],
+                        [0.000000, 1232.093593, 233.484009],
                         [0.000000, 0.000000, 1.000000]])
 		
+
 		# Camera coordinates 
 		self.x_cam = -6.6
 		self.y_cam = -19.5
