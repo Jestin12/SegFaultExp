@@ -24,7 +24,7 @@ class ArmKinematics(Node):
 
 		# Creating Subscribers 
 		self.SignSub = self.create_subscription(String, '/plant_detection', self.coordinate_callback, 10)
-		self.VelSub = self.create_subscription(String, '/move_forward', self.velocity_callback, 10)
+
 
 		# Constant distances (cm)
 		self.camera_height = 13
@@ -69,17 +69,6 @@ class ArmKinematics(Node):
 		
 		self.last_detection_time = time.time() - 5
 
-		self.stopped = 0
-
-	def callback(self):
-		if self.stopped:
-			coord 
-
-	
-	def velocity_callback(self, msg):
-		if msg.data == "STOPPED": 
-			self.velocity_status = 1
-
 
 	def coordinate_callback(self, msg): 
 		current_time = time.time()
@@ -117,11 +106,9 @@ class ArmKinematics(Node):
 			z_point = float(reference_point[2])
 
 			self.get_logger().info(f"x_point: {x_point}")
-
-			if self.stopped:
-				self.driveTo_x(x_point)
-				self.move_arm(y_point, z_point)
-				self.stopped = 0
+			self.driveTo_x(x_point)
+			self.move_arm(y_point, z_point)
+				
 
     
 
