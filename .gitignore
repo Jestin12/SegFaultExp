@@ -33,3 +33,6 @@ Makefile
 
 # Environment files
 .env
+
+# Bag files
+major/major_ws/src/map_stitching/bags
