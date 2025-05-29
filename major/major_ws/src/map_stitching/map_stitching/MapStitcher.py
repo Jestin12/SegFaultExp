@@ -6,6 +6,7 @@ import numpy as np
 import shutil
 
 from sensor_msgs.msg import CompressedImage
+from geometry_msgs.msg import Twist
 
 # *************************** MapStitcher.py ***************************************
 
@@ -28,6 +29,13 @@ class MapStitcher(Node):
             CompressedImage,
             '/camera/image_raw/compressed',
             self.save_image,
+            10
+        )
+
+        self.VelSub = self.create_subscription(
+            Twist,
+            '/cmd_vel',
+            self.vel_callback,
             10
         )
 
@@ -82,13 +90,22 @@ class MapStitcher(Node):
         # Image skip counter
         self.img_skip_counter = self.skip_imgs
 
+        # Flag to check for movement
+        self.moving = False
+
     def save_image(self, msg):
         # Skip images after desired number of images are saved
         if self.counter >= self.num_saved_imgs:
             return
         
+        # Skip specified number of images
         if self.img_skip_counter != self.skip_imgs:
             self.img_skip_counter += 1
+            return
+        
+        # Don't save an image if the bot isn't moving
+        if not self.moving:
+            self.get_logger().info("Robot is  not moving so not saving any images...")
             return
 
         # Check if image is empty
@@ -123,7 +140,22 @@ class MapStitcher(Node):
             self.stitch_image()
 
     def stitch_image(self):
-        stitcher = cv.Stitcher_create()
+        mode = cv.Stitcher_SCANS
+        stitcher = cv.Stitcher_create(mode)
+
+        stitcher.setWaveCorrection(True)
+        stitcher.setWaveCorrectKind(cv.detail.WAVE_CORRECT_VERT)
+
+        stitcher.setRegistrationResol(0.6)
+
+        stitcher.setPanoConfidenceThresh(0.2)
+
+        finder = cv.SIFT_create()
+        stitcher.setFeaturesFinder(finder)
+
+        matcher = cv.detail_BestOfNearestMatcher_create(try_use_gpu=False, match_conf=0.5)
+
+        # stitcher = cv.Stitcher_create()
         images = []
 
         if len(os.listdir(self.save_path)) >= 2:
@@ -159,6 +191,10 @@ class MapStitcher(Node):
         else:
             print(f"Stitching failed with unknown status code: {status}")
 
+    def vel_callback(self, msg):
+        if msg.linear.x > 0:
+            self.moving = True
+            return
 
 def main(args=None):
     rclpy.init(args=args)
