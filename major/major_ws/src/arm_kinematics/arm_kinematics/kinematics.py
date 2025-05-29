@@ -117,8 +117,8 @@ class ArmKinematics(Node):
 		# Define symbolic variables
 		Theta1, Theta2 = symbols('Theta1 Theta2')
 
-		EqY = Eq(Ye, self.L1*cos(Theta1) + self.L2_closed*cos(Theta1 - Theta2))
-		EqZ = Eq(Ze, self.L1*sin(Theta1) + self.L2_closed*sin(Theta1 - Theta2))
+		EqY = Eq(Ye, self.L1*cos(Theta1) + self.L2_closed*cos(Theta2 - Theta1))
+		EqZ = Eq(Ze, self.L1*sin(Theta1) - self.L2_closed*sin(Theta2 - Theta1))
 
 		joint_angles = solve((EqY, EqZ), (Theta1, Theta2))
 
