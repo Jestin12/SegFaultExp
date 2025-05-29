@@ -119,18 +119,16 @@ class Followeralt(Node):
 		self.vel_publisher.publish(vel_msg)
 
 
-	def servo_motion(self): 
-		msg = String() 
-
-		if msg.data == "done": 
+	def servo_motion(self, msg): 
+		if msg.data == "DONE": 
+			self.get_logger().info("Recieved DONE command")
 			self.movement_command = 1
 		else: 
 			self.movement_command = 0
 
 
-	def plant_check(self): 
-		msg = String() 
-		split_message = msg.split(" ")
+	def plant_check(self, msg): 
+		split_message = msg.data.split(" ")
 		
 		if split_message[0] == "Unhealthy": 
 			self.movement_command = 0
