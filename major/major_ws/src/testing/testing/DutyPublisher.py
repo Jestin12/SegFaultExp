@@ -63,6 +63,7 @@ def main(args=None):
         rclpy.spin(node)
     except KeyboardInterrupt:
         node.get_logger().info('Keyboard interrupt, shutting down...')
+        
     finally:
         # Clean up
         node.is_running = False

@@ -19,6 +19,7 @@ class Controller(Node):
 		self.drive_publisher = self.create_publisher(String, '/drive_status', 10)
 		self.arm_publisher = self.create_publisher(String, '/arm_status', 10) #this trigegrs arm_callback each time so think of timing logic 
 
+		self.timer = self.create_timer(0.5, self.callback_function)
 
 	def arm_callback(self): 
 		None 
