@@ -16,97 +16,26 @@ from ultralytics import YOLO
 import cv2
 import time
 import torch
-import torchvision.transforms as transforms
 from PIL import Image
-
-# ResNet-like model definition
-class BasicBlock(torch.nn.Module):
-    def __init__(self, in_channels, out_channels, stride=1):
-        super(BasicBlock, self).__init__()
-        self.conv1 = torch.nn.Conv2d(in_channels, out_channels, kernel_size=3, stride=stride, padding=1, bias=False)
-        self.bn1 = torch.nn.BatchNorm2d(out_channels)
-        self.conv2 = torch.nn.Conv2d(out_channels, out_channels, kernel_size=3, stride=1, padding=1, bias=False)
-        self.bn2 = torch.nn.BatchNorm2d(out_channels)
-        self.shortcut = torch.nn.Sequential()
-        if stride != 1 or in_channels != out_channels:
-            self.shortcut = torch.nn.Sequential(
-                torch.nn.Conv2d(in_channels, out_channels, kernel_size=1, stride=stride, bias=False),
-                torch.nn.BatchNorm2d(out_channels)
-            )
-
-    def forward(self, x):
-        out = torch.nn.functional.relu(self.bn1(self.conv1(x)))
-        out = self.bn2(self.conv2(out))
-        out += self.shortcut(x)
-        out = torch.nn.functional.relu(out)
-        return out
-
-class LeafClassifier(torch.nn.Module):
-    def __init__(self, num_classes):
-        super(LeafClassifier, self).__init__()
-        self.conv1 = torch.nn.Conv2d(3, 64, kernel_size=7, stride=2, padding=3, bias=False)
-        self.bn1 = torch.nn.BatchNorm2d(64)
-        self.layer1 = self._make_layer(64, 64, 2)
-        self.layer2 = self._make_layer(64, 128, 2, stride=2)
-        self.layer3 = self._make_layer(128, 256, 2, stride=2)
-        self.layer4 = self._make_layer(256, 512, 2, stride=2)
-        self.linear = torch.nn.Linear(512, num_classes)
-
-    def _make_layer(self, in_channels, out_channels, blocks, stride=1):
-        layers = []
-        layers.append(BasicBlock(in_channels, out_channels, stride))
-        for _ in range(1, blocks):
-            layers.append(BasicBlock(out_channels, out_channels))
-        return torch.nn.Sequential(*layers)
-
-    def forward(self, x):
-        x = torch.nn.functional.relu(self.bn1(self.conv1(x)))
-        x = self.layer1(x)
-        x = self.layer2(x)
-        x = self.layer3(x)
-        x = self.layer4(x)
-        x = torch.nn.functional.avg_pool2d(x, 4)
-        x = x.view(x.size(0), -1)
-        x = self.linear(x)
-        return x
-
-def load_classification_model(model_path, num_classes):
-    model = LeafClassifier(num_classes)
-    checkpoint = torch.load(model_path, map_location=torch.device('cpu'))
-    model.load_state_dict(checkpoint['model'])
-    model.eval()
-    return model
-
-def preprocess_image(image):
-    transform = transforms.Compose([
-        transforms.Resize((64, 64)),
-        transforms.ToTensor(),
-        transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
-    ])
-    return transform(image).unsqueeze(0)
-
-def classify_leaf(model, image_tensor):
-    with torch.no_grad():
-        output = model(image_tensor)
-        probs = torch.nn.functional.softmax(output, dim=1)
-        confidence, predicted = torch.max(probs, 1)
-        return predicted.item(), confidence.item()
+from leaf_classifier import load_classification_model, classify_leaf, get_classification_label
 
 def main():
     print("Starting webcam detection...")
     
-    # Check if model exists
-    model_path = '../models/best.pt'
-    if not os.path.exists(model_path):
-        print(f"Error: Model file '{model_path}' not found!")
+    # Check if models exist
+    detection_model_path = '../models/best.pt'
+    classification_model_path = '../models/best_model.pth'
+    
+    if not os.path.exists(detection_model_path):
+        print(f"Error: Detection model file '{detection_model_path}' not found!")
         print("Please ensure your trained model is in the 'models' directory")
         return
     
     # Load classification model
-    clf_model_path = '../models/best_model.pth'
-    num_classes = 2  # Change if your model has a different number of classes
-    clf_model = load_classification_model(clf_model_path, num_classes)
-
+    clf_model = load_classification_model(classification_model_path)
+    if clf_model is None:
+        print("Warning: Running in detection-only mode")
+    
     # Open webcam first to make sure it works
     print("Initializing webcam...")
     cap = None
@@ -138,8 +67,8 @@ def main():
             from ultralytics.nn.modules import Conv
             torch.serialization.add_safe_globals([DetectionModel, Sequential, Conv])
         from ultralytics import YOLO
-        model = YOLO(model_path)
-        print("Model loaded successfully!")
+        model = YOLO(detection_model_path)
+        print("Detection model loaded successfully!")
         print(f"Model classes: {model.names}")
         print(f"Number of classes: {len(model.names)}")
     except Exception as e:
@@ -197,12 +126,28 @@ def main():
                 if conf < 0.75:
                     continue  # Skip detections below 75% confidence
                 cls = int(box.cls[0])
-                label = f"{result.names[cls]} {conf:.2f}"
                 
                 # Calculate center point
                 center_x = (x1 + x2) // 2
                 center_y = (y1 + y2) // 2
-                print(f"Leaf center: ({center_x}, {center_y})")
+                
+                # Crop the detected leaf region
+                leaf_crop = frame[y1:y2, x1:x2]
+                
+                # Get classification if model is available
+                classification_label = "Unknown"
+                if clf_model is not None and leaf_crop.size > 0:
+                    pred, pred_conf = classify_leaf(leaf_crop, clf_model)
+                    classification_label = get_classification_label(pred, pred_conf)
+                
+                # Print detection info
+                print(f"Leaf detected:")
+                print(f"  - Center coordinates: x={center_x}, y={center_y}")
+                print(f"  - Classification: {classification_label}")
+                print("  -" + "-" * 40)  # Separator line
+                
+                # Create label with detection confidence
+                label = f"{result.names[cls]} {conf:.2f}"
                 
                 # Place a yellow dot at the center point
                 cv2.circle(frame, (center_x, center_y), 5, (0, 255, 255), -1)
@@ -214,6 +159,9 @@ def main():
                 (label_w, label_h), _ = cv2.getTextSize(label, cv2.FONT_HERSHEY_SIMPLEX, 0.5, 2)
                 cv2.rectangle(frame, (x1, y1 - label_h - 10), (x1 + label_w, y1), (0, 255, 0), -1)
                 cv2.putText(frame, label, (x1, y1 - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 0), 2)
+                
+                # Draw classification label
+                cv2.putText(frame, classification_label, (x1, y2 + 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0, 0, 255), 2)
         
         # Display info on frame
         cv2.putText(frame, f"FPS: {fps:.1f}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
