@@ -2,7 +2,7 @@ import RPi.GPIO as GPIO
 import rclpy
 from rclpy.node import Node
 from geometry_msgs.msg import Twist 
-from std_msgs.msg import String
+from std_msgs.msg import String, UInt32MultiArray
 # from piservo import Servo
 import time
 import numpy as np
@@ -18,6 +18,7 @@ class ServoController(Node):
 		self.SHOULDERpin = 16
 		self.ELBOWpin = 26
 		self.HANDpin = 13
+		self.ENABLEpin = 17
 
 		GPIO.setmode(GPIO.BCM)
 
@@ -26,8 +27,11 @@ class ServoController(Node):
 		GPIO.setup(self.SHOULDERpin, GPIO.OUT)
 		GPIO.setup(self.ELBOWpin, GPIO.OUT)
 		GPIO.setup(self.HANDpin, GPIO.OUT)
+		GPIO.setup(self.ENABLEpin, GPIO.OUT)
 
 
+		GPIO.output(self.ENABLEpin, GPIO.HIGH)
+		self.get_logger().info(f'pin 17 set to high')
 		self.shoulder = GPIO.PWM(self.SHOULDERpin, 333)
 		self.elbow = GPIO.PWM(self.ELBOWpin, 50)
 		self.hand = GPIO.PWM(self.HANDpin, 50)
@@ -48,12 +52,22 @@ class ServoController(Node):
 		self.elbow.ChangeDutyCycle(self.elbow_duty)
 		self.hand.ChangeDutyCycle(self.hand_duty)
 		
+		time.sleep(2)
+
+		# self.shoulder.stop() 
+		# self.elbow.stop()
+		# self.hand.ChangeDutyCycle(0)
+		GPIO.output(self.ENABLEpin, GPIO.LOW)
+		self.get_logger().info(f'pin 17 set to low')
+
+		
 		self.get_logger().info(f'joint{0}, duty-cycle: {self.joints_duty[0]})')
 		self.get_logger().info(f'joint{1}, duty-cycle: {self.joints_duty[1]})')
 		self.get_logger().info(f'joint{2}, duty-cycle: {self.joints_duty[2]})')
 
 		# Create a subscriber to the joint angles 
-		self.AngleSub = self.create_subscription(String, '/joint_angles', self.angles_callback, 10)
+		# self.AngleSub = self.create_subscription(String, '/joint_angles', self.angles_callback, 10)
+		self.AngleSub = self.create_subscription(String, '/joint_signals', self.angles_callback, 10)
 
 		# Create a publisher to robot status 
 		self.status_publisher = self.create_publisher(String, '/robot_status', 10)
@@ -61,11 +75,10 @@ class ServoController(Node):
 	
 	def angles_callback(self, msg):
 
+		self.get_logger().info(f'Received')
 
-		JointDutyString = msg.data.split(",")
-
+		JointDutyString = msg.data.split(',')
 		JointDuty = [float(x) for x in JointDutyString]
-		self.get_logger().info(f'Received: {JointDuty}')
 
 		if isinstance(JointDuty[0], float):		
 			if JointDuty[0] > 63:
@@ -92,9 +105,15 @@ class ServoController(Node):
 
 		# self.get_logger().info(f"Hand duty: {JointDuty[2]}")
 
+		GPIO.output(self.ENABLEpin, GPIO.HIGH)
+		self.get_logger().info(f'pin 17 set to high')
+
 		order = list(range(2))
 		order.reverse()
 
+		self.shoulder.start(0)  
+		self.elbow.start(0)
+		self.hand.start(0)
 
 		self.joints[2].ChangeDutyCycle(12)
 
@@ -122,14 +141,20 @@ class ServoController(Node):
 		self.hand.ChangeDutyCycle(8)
 		self.get_logger().info(f"Returning to home position")
 		time.sleep(2)
+
+		GPIO.output(self.ENABLEpin, GPIO.LOW)
+		self.get_logger().info(f'pin 17 set to low')
 		
+		# self.shoulder.stop() 
+		# self.elbow.stop()
+		# self.hand.stop()
 		# for i in range(3):
 		# 	time.sleep(1)
 		# 	self.get_logger().info(f"Waiting for arm to finish {i}")
 
 		# Start line following 
 		status_msg = String() 
-		status_msg.data = "START"
+		status_msg.data = "DONE"
 		self.status_publisher.publish(status_msg)
 
 
