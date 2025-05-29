@@ -37,7 +37,12 @@ class MapStitcher(Node):
         self.declare_parameter('num_saved_imgs', 40)
         self.num_saved_imgs = self.get_parameter('num_saved_imgs').get_parameter_value().integer_value
 
+        # Declare how many images to skip
+        self.declare_parameter('skip_imgs', 4)
+        self.skip_imgs = self.get_parameter('skip_imgs').get_parameter_value().integer_value
+
         self.get_logger().info(f"Number of images to be stitched: {self.num_saved_imgs}.\n To change this parameter use --ros-args -p num_saved_imgs:=[INTEGER]\n")
+        self.get_logger().info(f"Skipping every {self.skip_imgs} images before saving. To change this parameter use --ros-args -p skip_imgs:=[INTEGER]\n")
 
         #Define home directory
         self.home_dir = os.environ.get("HOME")
@@ -63,6 +68,7 @@ class MapStitcher(Node):
                 elif delete == 'N':
                     print("Attempting to stitch images in directory...")
                     self.stitch_image()
+                    break
                 else:
                     print(f"'{delete}' is an invalid option. Please enter 'Y' or 'N'.")
         except PermissionError:
@@ -70,12 +76,19 @@ class MapStitcher(Node):
         except Exception as e:
             print(f"An error occurred: {e}")
 
-        #Counter to track images
+        # Counter to track images
         self.counter = 0
+
+        # Image skip counter
+        self.img_skip_counter = self.skip_imgs
 
     def save_image(self, msg):
         # Skip images after desired number of images are saved
         if self.counter >= self.num_saved_imgs:
+            return
+        
+        if self.img_skip_counter != self.skip_imgs:
+            self.img_skip_counter += 1
             return
 
         # Check if image is empty
@@ -87,6 +100,13 @@ class MapStitcher(Node):
         ImgArray = np.frombuffer(msg.data, np.uint8)
         CVImage = cv.imdecode(ImgArray, cv.IMREAD_COLOR)
 
+        # Check if image has enough features
+        sift = cv.SIFT_create()
+        kp, des = sift.detectAndCompute(CVImage, None)
+        if des is None and len(kp) < 10:
+            self.get_logger().warn("Image did not have enough features. Skipping...")
+            return
+        
         # Check if decoding worked correctly
         if CVImage is None:
             self.get_logger().error("Failed to decode image. Skipping...")
@@ -94,6 +114,7 @@ class MapStitcher(Node):
 
         # Save the image
         self.counter += 1
+        self.img_skip_counter = 0
         filename = os.path.join(self.save_path, f"image_{self.counter}.jpg")
         cv.imwrite(filename, CVImage)
         self.get_logger().info(f"Saved image {filename}.")
@@ -120,6 +141,8 @@ class MapStitcher(Node):
             print("Not enough images to perform stitch. Exiting...")
             exit(0)
 
+        print(f"Stitching {self.num_saved_imgs} images...")
+
         (status,stitched) = stitcher.stitch(images=images)
 
         if status == cv.Stitcher_OK:
@@ -127,8 +150,15 @@ class MapStitcher(Node):
             cv.imwrite(os.path.join(self.save_path + "/stitched_result.jpg"), stitched)
             print(f"Image saved to {self.save_path}")
             exit(0)
+        elif status == cv.Stitcher_ERR_NEED_MORE_IMGS:
+            print("Stitching failed: NEED_MORE_IMGS")
+        elif status == cv.Stitcher_ERR_HOMOGRAPHY_EST_FAIL:
+            print("Stitching failed: HOMOGRAPHY_EST_FAIL")
+        elif status == cv.Stitcher_ERR_CAMERA_PARAMS_ADJUST_FAIL:
+            print("Stitching failed: CAMERA_PARAMS_ADJUST_FAIL")
         else:
-            print(f"Stitching failed with status code: {status}")
+            print(f"Stitching failed with unknown status code: {status}")
+
 
 def main(args=None):
     rclpy.init(args=args)
