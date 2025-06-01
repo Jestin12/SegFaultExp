@@ -46,9 +46,7 @@ class ArmKinematics(Node):
 		self.L2_closed = 28.5
 		
 		# Creating publishers 
-		# self.joint_publisher = self.create_publisher(UInt32MultiArray, '/joint_signals', 10)
 		self.joint_publisher = self.create_publisher(String, '/joint_signals', 10)
-		# self.MovePub = self.create_publisher(Twist, "/cmd_vel", 10)
 		self.MovePub = self.create_publisher(Twist, "/ArmKinematicsVel", 10)
 
 		# Creating Subscribers 
@@ -182,15 +180,7 @@ class ArmKinematics(Node):
 
 		Theta1 = np.arccos(cos_angle1) + np.arctan2(Ze, Ye)
 
-		# self.get_logger().info(f"Found Angles.")
-		# print(joint_angles)
-
 		
-		# Iterate through each pair of angles to find a valid solution 
-		# for idx, pair in enumerate(joint_angles): 
-
-			# theta1 = np.rad2deg(float(pair[0].evalf().as_real_imag()[0]))
-			# theta2 = np.rad2deg(float(pair[1].evalf().as_real_imag()[0]))
 
 		theta1 = np.rad2deg(Theta1)
 		theta2 = np.rad2deg(Theta2)
@@ -221,9 +211,6 @@ class ArmKinematics(Node):
 
 		else: 
 			# Publish the joint angles if they are valid 
-			# joints = UInt32MultiArray()
-			# joints.data = [int(np.round(theta1_signal)), int(np.round(theta2_signal))]
-			# self.joint_publisher.publish(joints)
 			joints = String()
 			joints.data = f"{int(np.round(theta1_signal))},{int(np.round(theta2_signal))}"
 			self.joint_publisher.publish(joints)

@@ -5,6 +5,30 @@ from rclpy.node import Node
 from geometry_msgs.msg import Twist
 import time
 
+'''
+Package:    Override
+File:       TwistMultiplexer.py
+
+Description:
+            This file defines and runs a ROS2 node that acts
+            as a multiplexer. This node receives Twist messages from
+            ArmKinematicsVel and LineFollowerVel and republishes the
+            message from the topic with the higher priority to /cmd_vel.
+
+            In this case ArmKinematicsVel has the higher priority, the 
+            code will republish the ArmKinematicsVel messages immediately.
+            On the other hand, LineFollowerVel's messages will be ignored
+            until is it has been 3 seconds since the most recent
+            ArmKinematicsVel message has been received. After the three 
+            seconds has lapsed LineFollower messages will be published to
+            /cmd_vel.
+
+Dependencies:
+            rcply   geometry_msgs   time
+        
+'''
+
+
 class TwistMultiplexer(Node):
     def __init__(self):
         super().__init__('twist_multiplexer')
@@ -48,19 +72,19 @@ class TwistMultiplexer(Node):
         self.get_logger().info('Timeout: 3.0 seconds')
         
     def arm_callback(self, msg):
-        """Callback for ArmKinematicsVel topic (higher priority)"""
+        # Callback for ArmKinematicsVel topic (higher priority)
         self.last_arm_msg = msg
         self.last_arm_time = time.time()
         self.get_logger().debug('Received arm command')
         
     def line_callback(self, msg):
-        """Callback for LineFollowerVel topic (lower priority)"""
+        # Callback for LineFollowerVel topic (lower priority)
         self.last_line_msg = msg
         self.last_line_time = time.time()
         self.get_logger().debug('Received line follower command')
         
     def timer_callback(self):
-        """Main logic to decide which message to publish"""
+        # Main logic to decide which message to publish
         current_time = time.time()
         output_msg = Twist()  # Default to zero velocity
         active_source = "none"

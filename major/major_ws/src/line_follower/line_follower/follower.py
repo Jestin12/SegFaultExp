@@ -9,6 +9,17 @@ import time
 
 import os
 
+'''
+Package:		line_follower
+File:			follower.py
+
+Description:	
+				This 
+                                
+Dependencies:
+
+'''
+
 class Followeralt(Node): 
         def __init__(self): 
                 super().__init__("Follower")
