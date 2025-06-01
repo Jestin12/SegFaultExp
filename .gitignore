@@ -1,6 +1,6 @@
 # ROS 2 build artifacts
-build/
 install/
+build/
 log/
 
 # Colcon cache
@@ -86,3 +86,5 @@ Computer_Vision_Model/YOLO/models/
 *.pt
 *.pth
 *.tflite
+# Bag files
+major/major_ws/src/map_stitching/bags
