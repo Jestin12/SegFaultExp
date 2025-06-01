@@ -1,5 +1,6 @@
 import os
 import sys
+import rclpy
 
 # Automatically activate the virtual environment if not already activated
 venv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'venv')
@@ -13,7 +14,6 @@ if not os.environ.get('VIRTUAL_ENV'):
         print("Warning: Virtual environment not found at", venv_path)
 
 
-import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 from sensor_msgs.msg import LaserScan
