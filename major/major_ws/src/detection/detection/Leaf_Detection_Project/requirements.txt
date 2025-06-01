@@ -1,0 +1,13 @@
+torch
+torchvision
+tensorflow
+tensorflow-datasets
+opencv-python
+pillow
+scipy
+numpy
+matplotlib
+seaborn
+pandas
+scikit-learn
+tqdm

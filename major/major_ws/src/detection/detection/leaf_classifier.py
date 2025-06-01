@@ -56,7 +56,7 @@ class LeafDiseaseClassifier(nn.Module):
         return x
 
 def load_classification_model(model_path, num_classes=2):
-    """Load the classification model from the specified path."""
+
     model = LeafDiseaseClassifier(num_classes)
     try:
         checkpoint = torch.load(model_path, map_location=torch.device('cpu'))
@@ -71,7 +71,7 @@ def load_classification_model(model_path, num_classes=2):
         return None
 
 def preprocess_image(image):
-    """Preprocess the image for classification."""
+
     transform = transforms.Compose([
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
@@ -79,16 +79,7 @@ def preprocess_image(image):
     return transform(image).unsqueeze(0)
 
 def classify_leaf(cropped_image, model):
-    """
-    Classify a leaf image as healthy or diseased.
     
-    Args:
-        cropped_image: numpy array of the cropped leaf image
-        model: loaded classification model
-        
-    Returns:
-        tuple: (prediction, confidence) where prediction is 0 for healthy, 1 for diseased
-    """
     if model is None or cropped_image is None or cropped_image.size == 0:
         return None, None
         

@@ -1,7 +1,6 @@
-# from camera_detection import LeafClassifier, load_classification_model, preprocess_image, classify_leaf
-
 import os
 import sys
+import rclpy
 
 # Automatically activate the virtual environment if not already activated
 venv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'venv')
@@ -15,7 +14,6 @@ if not os.environ.get('VIRTUAL_ENV'):
         print("Warning: Virtual environment not found at", venv_path)
 
 
-import rclpy
 from rclpy.node import Node
 from std_msgs.msg import String
 from sensor_msgs.msg import LaserScan
@@ -50,17 +48,11 @@ class Steward(Node):
 
         self.ImgSub = self.create_subscription(CompressedImage, '/camera/image_raw/compressed', self.ImgSub_callback, 10)
 
-        # self.LeafClassifier = LeafClassifier()
-
         self.ProcessedImgPub = self.create_publisher(CompressedImage, '/processed_image/compressed', 10)
-
-
-        # print("Starting webcam detection...")
     
         # Check if model exists
         self.model_path = '/home/neel/SegFaultExp/major/major_ws/src/detection/detection/models/best.pt'
 
-        
 
         if not os.path.exists(self.model_path):
             print(f"Error: Model file '{self.model_path}' not found!")
@@ -89,25 +81,12 @@ class Steward(Node):
             print(f"Number of classes: {len(self.model.names)}")
         except Exception as e:
             print(f"Error loading model: {str(e)}")
-            print("\nTroubleshooting tips:")
-            print("1. Ensure the model path is correct")
-            print("2. Make sure the model was trained with a compatible YOLO version")
-            print("3. Try updating ultralytics: pip install --upgrade ultralytics")
             return
         
         # Set model parameters
         self.model.conf = 0.25  # NMS confidence threshold
         self.model.iou = 0.45   # NMS IoU threshold
         self.model.max_det = 1000  # maximum number of detections per image
-
-        # print("\nStarting detection loop...")
-        # print("Press 'q' to quit, 's' to save screenshot")
-        
-        # # FPS calculation
-        # self.fps_start_time = time.time()
-        # self.fps_frame_count = 0
-        # self.fps = 0
-        
 
 
     def ImgSub_callback(self, msg):
@@ -120,29 +99,13 @@ class Steward(Node):
         # Convert BGR to RGB (YOLOv8 expects RGB)
         image_rgb = cv2.cvtColor(ImgData, cv2.COLOR_BGR2RGB)
 
-        # # Calculate FPS
-        # fps_frame_count += 1
-        # if fps_frame_count >= 30:
-        #     fps_end_time = time.time()
-        #     fps = fps_frame_count / (fps_end_time - fps_start_time)
-        #     fps_start_time = fps_end_time
-        #     fps_frame_count = 0
-
         # Run YOLOv8 inference on the frame
         results = self.model.predict(image_rgb, verbose=False)
         result = results[0]
         
-        # self.get_logger().info(f"R1")
-        
         # Count detections
         num_detections = len(result.boxes) if result.boxes is not None else 0
         
-
-        # Count detections
-        num_detections = len(result.boxes) if result.boxes is not None else 0
-        
-        
-        # self.get_logger().info(f"R2")
                                
         # Draw bounding boxes and labels
         if result.boxes is not None:
@@ -190,13 +153,7 @@ class Steward(Node):
                 msg = String()
                 msg.data = f"{classification_label} {center_x} {center_y}"
                 self.ImgCordPub.publish(msg)
-        # # Display info on frame
-        # # cv2.putText(image_rgb, f"FPS: {fps:.1f}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-        # cv2.putText(image_rgb, f"Detections: {num_detections}", (10, 60), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
-        
-        # # Display the frame
-        # cv2.imshow("Leaf Detection", image_rgb)
-    # Add detection count to the image
+
         cv2.putText(image_rgb, f"Detections: {num_detections}", (10, 30), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2)
         
         # Convert RGB back to BGR for encoding (IMPORTANT!)
@@ -226,7 +183,6 @@ def main(args=None):
     rclpy.init(args=args)
     
     node = Steward()
-    
     
     # Use a MultiThreadedExecutor to handle the keyboard input thread
     # and ROS2 callbacks
