@@ -7,6 +7,9 @@ from sympy import symbols, Eq, solve, sqrt, atan2, acos, cos, sin, pprint, evalf
 import numpy as np
 import time
 
+
+
+
 class ArmKinematics(Node):
 	def __init__(self): 
 		super().__init__("ArmKinematics")
@@ -19,8 +22,8 @@ class ArmKinematics(Node):
 		# Creating publishers 
 		# self.joint_publisher = self.create_publisher(UInt32MultiArray, '/joint_signals', 10)
 		self.joint_publisher = self.create_publisher(String, '/joint_signals', 10)
-		self.MovePub = self.create_publisher(Twist, "/cmd_vel", 10)
-
+		# self.MovePub = self.create_publisher(Twist, "/cmd_vel", 10)
+		self.MovePub = self.create_publisher(Twist, "/ArmKinematicsVel", 10)
 
 		# Creating Subscribers 
 		self.SignSub = self.create_subscription(String, '/plant_detection', self.coordinate_callback, 10)
