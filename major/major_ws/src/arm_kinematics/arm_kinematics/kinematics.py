@@ -7,7 +7,33 @@ from sympy import symbols, Eq, solve, sqrt, atan2, acos, cos, sin, pprint, evalf
 import numpy as np
 import time
 
+'''
+Package: 	arm_kinematics
+File:		kinematics.py
+Author: 	Ameline
 
+Description:
+			This file defines and runs a ROS2 node which receives an pixel
+			coordinate from the /plant_detection topic and uses transformation
+			matrices and inverse kinematics to produce joint angles and duty
+			cycles to be published to the /joint_signals topic which is then
+			used to move servo motors in a robotic arm to move a manipulator
+			to a position defined by the pixel coordinate received.
+
+			The node also publishes to ArmKinematicsVel which moves the drive
+			motors of the robot so that the robot can move in the x dimension,
+			while the arm can move in the y and z dimension so that the robot
+			arm can reach a position defined by x,y,z.
+
+			The pixel coordinate received is with reference to an image published
+			by a camera to the ROS2 network. The camera takes a picture of a leaf
+			on the ground, the centre point of the image is the pixel coordinate
+			this node receives and is transformed to real world coordinates with
+			respect to the robot which runs this node and runs the camera.
+
+Dependencies:
+			rclpy	geometry_msgs	std_msgs	sympy	numpy	time
+'''
 
 
 class ArmKinematics(Node):
@@ -140,13 +166,6 @@ class ArmKinematics(Node):
 
 		self.get_logger().info(f"Move Arm")
 
-		# # Define symbolic variables
-		# Theta1, Theta2 = symbols('Theta1 Theta2')
-
-		# EqY = Eq(Ye, self.L1*cos(Theta1) + self.L2_closed*cos(Theta2 - Theta1))
-		# EqZ = Eq(Ze, self.L1*sin(Theta1) - self.L2_closed*sin(Theta2 - Theta1))
-
-		# joint_angles = solve((EqY, EqZ), (Theta1, Theta2))
 
 		r = np.sqrt(Ye**2 + Ze**2)
 
