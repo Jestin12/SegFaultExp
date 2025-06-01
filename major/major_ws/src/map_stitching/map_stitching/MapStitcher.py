@@ -139,49 +139,52 @@ class MapStitcher(Node):
         if self.counter == self.num_saved_imgs:
             self.stitch_image()
 
+    # Function to stitch images
     def stitch_image(self):
         mode = cv.Stitcher_SCANS
-        stitcher = cv.Stitcher_create(mode)
+        stitcher = cv.Stitcher.create(mode)
 
+        # Set thresholds for feature detection
         stitcher.setWaveCorrection(True)
-        stitcher.setWaveCorrectKind(cv.detail.WAVE_CORRECT_VERT)
-
         stitcher.setRegistrationResol(0.6)
+        stitcher.setPanoConfidenceThresh(0.05)
 
-        stitcher.setPanoConfidenceThresh(0.2)
-
-        finder = cv.SIFT_create()
-        stitcher.setFeaturesFinder(finder)
-
-        matcher = cv.detail_BestOfNearestMatcher_create(try_use_gpu=False, match_conf=0.5)
-
-        # stitcher = cv.Stitcher_create()
         images = []
 
-        if len(os.listdir(self.save_path)) >= 2:
-            for filename in sorted(os.listdir(self.save_path)):
-                if filename.endswith(".jpg") or filename.endswith(".png"):  
-                    filepath = os.path.join(self.save_path, filename)
-                    image = cv.imread(filepath)
+        # Check if there enough images to create a stitch
+        if len(os.listdir(self.save_path)) < 2:
+            print("Not enough images in folder to attempt stitching.")
+            return
 
-                    if image is None:
-                        print(f"Failed to load image: {filepath}")
-                        continue
-                    else:
-                        images.append(image)
-        else:
-            print("Not enough images to perform stitch. Exiting...")
-            exit(0)
+        # Iterate through images and append valid images to array
+        for filename in sorted(os.listdir(self.save_path)):
+            if filename.endswith(".jpg") or filename.endswith(".png"):
+                filepath = os.path.join(self.save_path, filename)
+                image = cv.imread(filepath)
 
-        print(f"Stitching {self.num_saved_imgs} images...")
+                if image is None or image.size == 0 or image.shape[0] == 0 or image.shape[1] == 0:
+                    print(f"Invalid or empty image: {filepath}")
+                    continue
 
-        (status,stitched) = stitcher.stitch(images=images)
+                images.append(image)
 
+        print(f"Stitching {len(images)} images...")
+
+        # Stitch images
+        try:
+            status, stitched = stitcher.stitch(images=images)
+        except Exception as e:
+            print(f"Exception during stitching: {e}")
+            return
+
+        # Check for errors when stitching
         if status == cv.Stitcher_OK:
             print("Stitching successful")
-            cv.imwrite(os.path.join(self.save_path + "/stitched_result.jpg"), stitched)
-            print(f"Image saved to {self.save_path}")
-            exit(0)
+            output_path = os.path.join(self.save_path, "stitched_result.jpg")
+            cv.imwrite(output_path, stitched)
+            print(f"Panorama saved to {output_path}")
+            self.get_logger().info("Stitching completed. Shutting down node.")
+            rclpy.shutdown()
         elif status == cv.Stitcher_ERR_NEED_MORE_IMGS:
             print("Stitching failed: NEED_MORE_IMGS")
         elif status == cv.Stitcher_ERR_HOMOGRAPHY_EST_FAIL:
@@ -191,6 +194,7 @@ class MapStitcher(Node):
         else:
             print(f"Stitching failed with unknown status code: {status}")
 
+    # Function to disable images saving if the bot is not moving
     def vel_callback(self, msg):
         if msg.linear.x > 0:
             self.moving = True
