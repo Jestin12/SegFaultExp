@@ -26,7 +26,7 @@ class ArmKinematics(Node):
 		self.MovePub = self.create_publisher(Twist, "/ArmKinematicsVel", 10)
 
 		# Creating Subscribers 
-		self.SignSub = self.create_subscription(String, '/plant_detection', self.coordinate_callback, 10)
+		self.sign_subscriber = self.create_subscription(String, '/plant_detection', self.coordinate_callback, 10)
 
 
 		# Constant distances (cm)
