@@ -1,6 +1,0 @@
-train: /Users/neelbagayatkar/Documents/MTRX5700/Major/Leaf_Detection/YOLO/YOLO_Model/train/images
-val: /Users/neelbagayatkar/Documents/MTRX5700/Major/Leaf_Detection/YOLO/YOLO_Model/valid/images
-test: /Users/neelbagayatkar/Documents/MTRX5700/Major/Leaf_Detection/YOLO/YOLO_Model/test/images
-
-nc: 1
-names: ['leaf']
